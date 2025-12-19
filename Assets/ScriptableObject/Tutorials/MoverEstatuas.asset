@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 067ecbc247fe391419cf4aaaa02b9b09, type: 3}
+  m_Name: MoverEstatuas
+  m_EditorClassIdentifier: 
+  tutorialID: 6
+  title: Acomodar las estatuas antiguas
+  instruction: "En esta isla hay estatuas antiguas que est\xE1n fuera de su lugar.\nTu
+    misi\xF3n es moverlas con cuidado y ponerlas en la base de piedra correcta.\n\nF\xEDjate
+    bien en el tama\xF1o, forma o s\xEDmbolo de cada estatua y su base.\nCuando pongas
+    una en el lugar correcto, \xA1brillar\xE1 o har\xE1 un sonido especial!\nColoca
+    todas en su sitio y\u2026 \xA1descubre qu\xE9 pasa cuando terminas!"
+  tutorialImage: {fileID: 0}

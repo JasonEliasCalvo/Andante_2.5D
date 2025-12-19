@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 067ecbc247fe391419cf4aaaa02b9b09, type: 3}
+  m_Name: HappyTutorial
+  m_EditorClassIdentifier: 
+  tutorialID: 5
+  title: Contento O Enojado
+  instruction: "En este juego ver\xE1s a varios personajes en la pantalla. Algunos
+    est\xE1n contentos y otros est\xE1n enojados.\nTu misi\xF3n es muy f\xE1cil:
+    toca y lleva la cara al primer cuadrado dependiendo del genero y pon la emocion
+    al lado haciendo exactamente lo mismo"
+  tutorialImage: {fileID: 0}
+  tutorialVideo: {fileID: 32900000, guid: f5fcf3b6d0143ce479272f64998cc0fa, type: 3}

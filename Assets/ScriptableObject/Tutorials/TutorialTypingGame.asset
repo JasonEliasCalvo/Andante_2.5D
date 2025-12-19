@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 067ecbc247fe391419cf4aaaa02b9b09, type: 3}
+  m_Name: TutorialTypingGame
+  m_EditorClassIdentifier: 
+  tutorialID: 4
+  title: Typing
+  instruction: "Typing Game es un juego donde, al escribir letras o palabras, se
+    van formando plataformas en la pantalla. El jugador debe escribir correctamente
+    para construir el camino y avanzar. Si se equivoca, puede caer o perder tiempo.
+    El objetivo es escribir r\xE1pido y sin errores para seguir avanzando y llegar
+    lo m\xE1s lejos posible"
+  tutorialImage: {fileID: 0}
+  tutorialVideo: {fileID: 32900000, guid: 1620474785072364985e69d6c11fbe8f, type: 3}

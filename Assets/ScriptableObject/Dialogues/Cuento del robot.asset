@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3f3a1fedaaba3b4faf8abec2819d9e7, type: 3}
+  m_Name: Cuento del robot
+  m_EditorClassIdentifier: 
+  dialogueLines:
+  - 'Una vez hubo un robot hecho con piezas sobrantes:
+
+'
+  - 'Nunca fue elegido.
+
+'
+  - 'No volaba, no hablaba bonito, y tampoco brillaba en la oscuridad.
+
+'
+  - "\nLo llamaban \"el feo\"\u2026\n"
+  - 'y lo dejaron en una esquina del mundo, donde ya nadie miraba.
+
+'
+  - "Pero \xE9l no se apag\xF3.\n"
+  - "Se qued\xF3 esperando.\n"
+  - "No para ser elegido, sino para que alguien, solo una vez, lo vea\u2026\n"
+  - 'y diga: "Hola."'
+  dialogueID: 17

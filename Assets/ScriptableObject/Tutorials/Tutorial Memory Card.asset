@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 067ecbc247fe391419cf4aaaa02b9b09, type: 3}
+  m_Name: Tutorial Memory Card
+  m_EditorClassIdentifier: 
+  tutorialID: 2
+  title: juego de memoria
+  instruction: "Memory Card es un juego en el que aparecen varias cartas boca abajo
+    en la pantalla. Al tocar dos, se voltean para mostrar su imagen. Si son iguales,
+    permanecen descubiertas; si no, se vuelven a tapar. El objetivo es recordar la
+    ubicaci\xF3n de las cartas y encontrar todas las parejas en el menor tiempo posible. "
+  tutorialImage: {fileID: 0}
+  tutorialVideo: {fileID: 32900000, guid: 83db4d7ca79e2e645afb03e56bc088f3, type: 3}

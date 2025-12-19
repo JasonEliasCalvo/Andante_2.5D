@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3f3a1fedaaba3b4faf8abec2819d9e7, type: 3}
+  m_Name: Cuento laptop
+  m_EditorClassIdentifier: 
+  dialogueLines:
+  - "Antes de que existiera la biblioteca, no hab\xEDa orden, solo ideas sueltas."
+  - "Dicen que alguien lo imagin\xF3 todo:"
+  - "amaba los libros\u2026 y las m\xE1quinas."
+  - "No usaba cables ni internet. Solo imaginaci\xF3n."
+  - "Con cada tecla, nac\xEDa una isla, una criatura, una historia."
+  - "As\xED tom\xF3 forma este mundo de palabras."
+  - "Hoy la pantalla est\xE1 en negro\u2026"
+  - "pero si prestas atenci\xF3n, a\xFAn suena el clic de una tecla solitaria."
+  dialogueID: 16

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0891d93d37dd9249a6a020aa4fdd1c8, type: 3}
+  m_Name: PiezaPacifica
+  m_EditorClassIdentifier: 
+  itemName: Pieza Pacifica
+  icon: {fileID: 350269707, guid: a0012eb9b2578fb47b66c4a1845abb73, type: 3}
+  description: "Regi\xF3n Pac\xEDfica\n\nEs la Regi\xF3n Bordeada por el oc\xE9ano
+    Pac\xEDfico, es una de las regiones m\xE1s biodiversas y h\xFAmedas del planeta."
