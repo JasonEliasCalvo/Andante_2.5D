@@ -19,10 +19,6 @@ public class UIManager : MonoBehaviour
 
     [Header("UI Game Elements")]
     public GameObject interactablePanel;
-    [SerializeField] private GameObject typingPanel;
-    [SerializeField] private GameObject timerPanel;
-    [SerializeField] private GameObject syllableGamePanel;
-    [SerializeField] private GameObject happyGamePanel;
 
     public GameObject optionsPanel;
     public GameObject pausePanel;
@@ -170,14 +166,6 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void ShowHappyGamePanel(bool state)
-    {
-        if (state)
-            AnimatePanelIn(happyGamePanel);
-        else
-            AnimatePanelOut(happyGamePanel);
-    }
-
     public void ShowPausePanel(bool state)
     {
         if (state)
@@ -201,36 +189,12 @@ public class UIManager : MonoBehaviour
         creditsPanel.SetActive(state);
     }
 
-    public void ShowTypingPanel(bool state)
-    {
-        if (state)
-            AnimatePanelIn(typingPanel);
-        else
-            AnimatePanelOut(typingPanel);
-    }
-
-    public void ShowSyllableGamePanel(bool state)
-    {
-        if (state)
-            AnimatePanelIn(syllableGamePanel);
-        else
-            AnimatePanelOut(syllableGamePanel);
-    }
-
     public void ShowOptionsPanel(bool state)
     {
         if (state)
             AnimatePanelIn(optionsPanel);
         else
             AnimatePanelOut(optionsPanel);
-    }
-
-    public void ShowTimerPanel(bool state)
-    {
-        if (state)
-            AnimatePanelIn(timerPanel);
-        else
-            AnimatePanelOut(timerPanel);
     }
 
     public void ShowMissionPanel(bool state)
@@ -254,11 +218,8 @@ public class UIManager : MonoBehaviour
     {
         return
        (dialoguePanel != null && dialoguePanel.activeSelf) ||
-       (syllableGamePanel != null && syllableGamePanel.activeSelf) ||
        (choicesPanel != null && choicesPanel.activeSelf) ||
-       (typingPanel != null && typingPanel.activeSelf) ||
        (TutorialPanel != null && TutorialPanel.activeSelf) ||
-       (happyGamePanel != null && happyGamePanel.activeSelf) ||
        (pausePanel != null && pausePanel.activeSelf) ||
        (optionsPanel != null && optionsPanel.activeSelf);
     }

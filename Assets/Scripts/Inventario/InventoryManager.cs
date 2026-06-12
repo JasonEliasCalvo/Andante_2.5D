@@ -47,8 +47,8 @@ public class InventoryManager : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetMouseButtonDown(0) && descriptionPanel.activeSelf)
-            ToggleDescription();
+        //if (Input.GetMouseButtonDown(0) && descriptionPanel.activeSelf)
+            //ToggleDescription();
     }
 
     public void ScrollSlot(float scroll)

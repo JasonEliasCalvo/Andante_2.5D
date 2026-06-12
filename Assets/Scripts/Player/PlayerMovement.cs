@@ -129,18 +129,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (CameraManager.instance.currentStyle == CameraStyle.Basic)
-        {
-            Vector3 finalVelocity = horizontalVelocity + Vector3.up * verticalVelocity;
-            controller.Move(finalVelocity * Time.deltaTime);
-        }
-        else if (CameraManager.instance.currentStyle == CameraStyle.Topdown)
+        if (CameraManager.instance.currentStyle == CameraStyle.Topdown)
         {
             Vector3 finalVelocity = horizontalVelocity + Vector3.up * verticalVelocity;
             controller.Move(finalVelocity * Time.deltaTime);
         }
         else if (CameraManager.instance.currentStyle == CameraStyle.Cinematic)
         {
+
         }
     }
 
@@ -167,6 +163,7 @@ public class PlayerMovement : MonoBehaviour
     // =========================
     private void ApplyGravity()
     {
+        Debug.Log("cae");
         if (controller.isGrounded)
         {
             if (verticalVelocity < 0f)
