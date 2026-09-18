@@ -1,7 +1,6 @@
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Video;
 
 public class UIManager : MonoBehaviour
@@ -251,7 +250,7 @@ public class UIManager : MonoBehaviour
         TutorialInfo info = tutorialDatabase.GetTutorialByID(tutorialID);
 
         GameManager.instance.MovingCamera(false);
-        GameManager.instance.eventGameEnd();
+        GameManager.instance.GameEnd();
 
         titleText.text = info.title;     
         tutorialVideo.clip = info.tutorialVideo;
@@ -264,7 +263,7 @@ public class UIManager : MonoBehaviour
     public void HideTutorial()
     {
         GameManager.instance.MovingCamera(true);
-        GameManager.instance.eventGameStart();
+        GameManager.instance.GameStart();
         AnimatePanelOut(TutorialPanel);
     }
 

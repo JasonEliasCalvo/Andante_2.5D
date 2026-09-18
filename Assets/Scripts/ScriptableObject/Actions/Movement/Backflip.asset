@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61c1b40791a1b6244ac59c7e5709bded, type: 3}
+  m_Name: Backflip
+  m_EditorClassIdentifier: Assembly-CSharp::ActionData
+  actionName: Backflip
+  actionType: 2
+  inputType: 1
+  allowedDirections: 5
+  animationStateName: Backflip
+  duration: 0.5
+  lockHorizontalMovement: 1
+  conditions:
+  - rid: 1691038069479702628
+  effects:
+  - rid: 1691038069479702635
+  - rid: 1691038247547568210
+  references:
+    version: 2
+    RefIds:
+    - rid: 1691038069479702628
+      type: {class: GroundedCondition, ns: , asm: Assembly-CSharp}
+      data:
+        allowCoyoteTime: 0
+    - rid: 1691038069479702635
+      type: {class: DisplacementEffct, ns: , asm: Assembly-CSharp}
+      data:
+        displacement: {fileID: 11400000, guid: 3b3580a1ee2ed2341b8243e58429d449, type: 2}
+        directionMode: 1
+    - rid: 1691038247547568210
+      type: {class: AudioEffect, ns: , asm: Assembly-CSharp}
+      data:
+        audioClip: {fileID: 8300000, guid: fdd991f7e1776c3459702518a238bdd9, type: 3}

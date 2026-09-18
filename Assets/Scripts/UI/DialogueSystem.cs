@@ -104,7 +104,7 @@ public class DialogueSystem : MonoBehaviour
         UIManager.instance.ShowDialoguePanel(true);
         UIManager.instance.ShowChoicesPanel(false);
         GameManager.instance.MovingCamera(false);
-        GameManager.instance.InitialGameEnd();
+        GameManager.instance.GameEnd();
 
         currentDialogueState = DialogueState.DialogueTyping;
         StartCoroutine(ShowDialogueLine());
@@ -246,7 +246,7 @@ public class DialogueSystem : MonoBehaviour
 
         UpdateSelectedChoiceUI();
 
-        GameManager.instance.InitialGameEnd();
+        GameManager.instance.GameEnd();
         GameManager.instance.MovingCamera(false);
         currentDialogueState = DialogueState.ChoicePresenting;
     }
@@ -362,7 +362,7 @@ public class DialogueSystem : MonoBehaviour
         UIManager.instance.GetDialogueText().text = string.Empty;
 
         UIManager.instance.ShowDialoguePanel(false);
-        GameManager.instance.InitialGameStart();
+        GameManager.instance.GameStart();
         GameManager.instance.MovingCamera(true);
         UIManager.instance.ShowContinueIcon(false);
         currentDialogueState = DialogueState.None;
@@ -378,7 +378,7 @@ public class DialogueSystem : MonoBehaviour
         UIManager.instance.ShowDialoguePanel(false);
 
         UIManager.instance.GetDialogueText().text = string.Empty;
-        GameManager.instance.InitialGameStart();
+        GameManager.instance.GameStart();
         GameManager.instance.MovingCamera(true);
         currentDialogueState = DialogueState.None;
         currentChoiceEvent?.Invoke();

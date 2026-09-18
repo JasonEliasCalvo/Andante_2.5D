@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61c1b40791a1b6244ac59c7e5709bded, type: 3}
+  m_Name: Jump
+  m_EditorClassIdentifier: Assembly-CSharp::ActionData
+  actionName: Jump
+  actionType: 1
+  inputType: 2
+  allowedDirections: -1
+  animationStateName: Jump
+  duration: 0.5
+  lockHorizontalMovement: 0
+  conditions:
+  - rid: 1691038069479702636
+  effects:
+  - rid: 1691038069479702637
+  - rid: 1691038247547568209
+  references:
+    version: 2
+    RefIds:
+    - rid: 1691038069479702636
+      type: {class: GroundedCondition, ns: , asm: Assembly-CSharp}
+      data:
+        allowCoyoteTime: 1
+    - rid: 1691038069479702637
+      type: {class: DisplacementEffct, ns: , asm: Assembly-CSharp}
+      data:
+        displacement: {fileID: 11400000, guid: fb8dbc81b8f23374298b738b06ad3e63, type: 2}
+        directionMode: 0
+    - rid: 1691038247547568209
+      type: {class: AudioEffect, ns: , asm: Assembly-CSharp}
+      data:
+        audioClip: {fileID: 8300000, guid: 8a1b1cb8edf4788469a774729a0bb81d, type: 3}

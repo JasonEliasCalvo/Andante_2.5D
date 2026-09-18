@@ -1,14 +1,14 @@
 fileFormatVersion: 2
 guid: fdf7972d9ae48b0409654eb5320bf684
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 24200
   internalIDToNameTable: []
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: ToonSkin
-    second: {fileID: 6142717178534264250, guid: 3775d831ca9250c44ac19bbf1bc394b9, type: 3}
+    second: {fileID: 2100000, guid: 83a718e29952a854a92538a72b3f1d33, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -76,6 +76,9 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8

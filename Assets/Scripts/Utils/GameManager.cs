@@ -9,8 +9,8 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public delegate void DelegatedGameStates();
-    public DelegatedGameStates eventGameStart;
-    public DelegatedGameStates eventGameEnd;
+    public DelegatedGameStates InitialGameStart;
+    public DelegatedGameStates InitialGameEnd;
     public DelegatedGameStates eventTypingGameStart;
     public DelegatedGameStates eventTypingGameReset;
     public DelegatedGameStates eventTypingGameEnd;
@@ -60,17 +60,15 @@ public class GameManager : MonoBehaviour
         StartFadeIn();
 
         timer = FindFirstObjectByType<Timer>();
-        Invoke(nameof(InitialGameStart), 0.2f);
+        Invoke(nameof(GameStart), 0.2f);
     }
 
-    public void InitialGameStart()
-    {
-        eventGameStart?.Invoke();
-    }
 
-    public void InitialGameEnd()
+    public void GameStart() => InitialGameStart?.Invoke();
+
+    public void GameEnd()
     {
-        eventGameEnd?.Invoke();
+        InitialGameEnd?.Invoke();
     }
 
     public void MovingCamera(bool state)
@@ -94,7 +92,7 @@ public class GameManager : MonoBehaviour
     {
         var triggerZones = FindObjectsByType<TriggerZone>(FindObjectsSortMode.None);
         var droppableZones = FindObjectsByType<DroppableZone>(FindObjectsSortMode.None);
-        var pl = FindObjectsByType<PlayerMovement>(FindObjectsSortMode.None);
+        var pl = FindObjectsByType<PlayerFighter>(FindObjectsSortMode.None);
 
 
         bool anyPlayerNear = triggerZones.Any(tz => tz.IsPlayerNear() || tz.IsPlayerInTrigger()) ||
@@ -109,6 +107,8 @@ public class GameManager : MonoBehaviour
 
     public void HidePanels()
     {
+        return;
+
         UIManager.instance.interactablePanel.SetActive(false);
         UIManager.instance.removeItemPanel.SetActive(false);
         UIManager.instance.hintPanel.SetActive(false);
@@ -262,7 +262,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(0);
         Time.timeScale = 1f;
     }
-    public void TogglePause()
+    public void GamePause()
     {
         if (Time.timeScale == 1f)
         {

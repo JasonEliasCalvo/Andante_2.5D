@@ -54,7 +54,7 @@ public class Ship : MovableObject
         }
 
         interactableOptions.possibleInteract = false;
-        GameManager.instance.InitialGameEnd();
+        GameManager.instance.GameEnd();
         List<int> currentPath = routes[currentRoute].pointIndices;
         Transform target = movePoints[currentPath[routeStep]];
 
@@ -93,7 +93,7 @@ public class Ship : MovableObject
         hasPlayedBellSound = false;
         interactableOptions.possibleInteract = true;
         UIManager.instance.ShowSkipPanel(false);
-        GameManager.instance.InitialGameStart();
+        GameManager.instance.GameStart();
         currentRoute = (currentRoute + 1) % routes.Count;
         routeStep = 0;
     }

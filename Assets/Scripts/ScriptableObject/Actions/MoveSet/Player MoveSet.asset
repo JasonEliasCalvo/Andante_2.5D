@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc087ea9caa6b8842a79c85c6b26616a, type: 3}
+  m_Name: Player MoveSet
+  m_EditorClassIdentifier: Assembly-CSharp::ComboSequence
+  actions:
+  - {fileID: 11400000, guid: 818d0aac409604a44854743f7e24a650, type: 2}
+  - {fileID: 11400000, guid: 9afeb241bd0bf104e84048433bab4d3a, type: 2}
+  - {fileID: 11400000, guid: 70c6357a113787249baa52aaa2da33ff, type: 2}
+  - {fileID: 11400000, guid: 54d64c25bbee100429dfdf34c23e5317, type: 2}
+  dodgeDisplacement: {fileID: 11400000, guid: 3b3580a1ee2ed2341b8243e58429d449, type: 2}
+  jumpDisplacement: {fileID: 11400000, guid: fb8dbc81b8f23374298b738b06ad3e63, type: 2}

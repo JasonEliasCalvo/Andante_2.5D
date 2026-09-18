@@ -64,7 +64,7 @@ public class UIInputHandler : MonoBehaviour
             OnSkipDialoguePressed?.Invoke();
             return;
         }
-        GameManager.instance.TogglePause();
+        GameManager.instance.GamePause();
     }
 
     private void OnScrollDialogueChoicesInput(InputAction.CallbackContext ctx)
