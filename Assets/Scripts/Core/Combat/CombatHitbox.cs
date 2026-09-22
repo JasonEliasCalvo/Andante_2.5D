@@ -24,7 +24,7 @@ public class CombatHitbox : MonoBehaviour
             myCollider.enabled = false;
     }
 
-    public void EnableHitbox(AttackData attack, ActionData action = null)
+    public void EnableHitbox(AttackData attack)
     {
         if (attack == null)
         {
@@ -33,7 +33,6 @@ public class CombatHitbox : MonoBehaviour
         }
 
         attackData = attack;
-        actionData = action;
 
         damage = attack.damage;
         hitStun = attack.hitStun;
@@ -80,15 +79,6 @@ public class CombatHitbox : MonoBehaviour
                 );
 
                 Instantiate(attackData.hitParticle, hitPoint, Quaternion.identity);
-            }
-            else
-            {
-                Debug.LogWarning($"El ataque '{actionName}' no tiene asignado un hitParticle en su AttackData.");
-            }
-
-            if (attackData.hitSound != null)
-            {
-                AudioSource.PlayClipAtPoint(attackData.hitSound, hitPoint);
             }
         }
         else

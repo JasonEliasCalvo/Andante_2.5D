@@ -1,132 +1,140 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-[RequireComponent(typeof(CharacterMovement))]
+[RequireComponent(typeof(ActionFrameClock))]
 public class ActionSystem : MonoBehaviour
 {
     [Header("References")]
     private CharacterMovement movement;
-    private LocomotionSystem locomotion;
     private FighterAnimator fighterAnimator;
-    private FighterEntity fighter;
+    private ActionFrameClock frameClock;
 
     [Header("Runtime")]
     public ActionData CurrentAction { get; private set; }
-
+    public ActionContext CurrentContext { get; private set; }
+    public int CurrentFrame { get; private set; }
     public bool IsActive => CurrentAction != null;
 
-    private float actionTimer;
+    private List<ActionTimelineEntry> activeEntries = new List<ActionTimelineEntry>();
 
     private void Awake()
     {
         if (movement == null) movement = GetComponent<CharacterMovement>();
-        if (locomotion == null) locomotion = GetComponent<LocomotionSystem>();
         if (fighterAnimator == null) fighterAnimator = GetComponent<FighterAnimator>();
-        if (fighter == null) fighter = GetComponent<FighterEntity>();
+        if (frameClock == null) frameClock = GetComponent<ActionFrameClock>();
+
+        frameClock.OnFrameTick += HandleFrameTick;
     }
 
-    private void Update()
+    private void OnDestroy()
     {
-        if (!IsActive)
-            return;
-
-        UpdateAction(Time.deltaTime);
+        if (frameClock != null)
+            frameClock.OnFrameTick -= HandleFrameTick;
     }
 
     public bool StartAction(ActionData action, ActionContext context)
     {
-        if (action == null)
-        {
-            Debug.LogWarning($"{name}: Se intentó ejecutar una acción null.", this);
-            return false;
-        }
+        if (action == null) return false;
 
         if (IsActive)
-            InterruptAction();
-
-        CurrentAction = action;
-        actionTimer = 0f;
-
-        Debug.Log( $"{name} → ACTION → {action.actionName}");
-
-        movement.SetMovementLock(MovementLockSource.Action, action.lockHorizontalMovement);
-
-        for (int i = 0; i < action.effects.Count; i++)
         {
-            if (action.effects[i] != null)
-                action.effects[i].Execute(gameObject, context);
+            if (!CanInterruptCurrentAction(action)) return false;
+            InterruptAction();
         }
 
-        if (action.animationStateName != null && action.animationStateName != "")
-            fighterAnimator?.PlayAction(action.animationStateName);
+        CurrentAction = action;
+        CurrentContext = context;
+        CurrentFrame = 0;
+        activeEntries.Clear();
+
+        Debug.Log($"<color=cyan>{name} → START ACTION ({action.actionName}) | Priority: {action.priority}</color>");
+
+        movement?.SetMovementLock(MovementLockSource.Action, action.lockHorizontalMovement);
+
+        fighterAnimator?.PlayAction(
+            action.animation,
+            action.totalFrames,
+            frameClock.TargetFPS,
+            0f
+        );
 
         fighterAnimator?.SetActionPlaying(true);
+        frameClock.StartClock();
+        HandleFrameTick(0);
+
+
         return true;
     }
 
-    private void UpdateAction(float deltaTime)
+
+    private void HandleFrameTick(int frame)
     {
-        actionTimer += deltaTime;
-        if (actionTimer >= GetActionDuration())
+        if (!IsActive) return;
+
+        CurrentFrame = frame;
+
+        for (int i = 0; i < CurrentAction.timeline.Count; i++)
+        {
+            var entry = CurrentAction.timeline[i];
+
+            if (CurrentFrame == entry.startFrame)
+            {
+                entry.effect?.OnStart(gameObject, CurrentContext);
+                activeEntries.Add(entry);
+            }
+
+            if (CurrentFrame >= entry.startFrame && CurrentFrame < entry.EndFrame)
+            {
+                int activeFrame = CurrentFrame - entry.startFrame;
+                entry.effect?.OnUpdate(gameObject, CurrentContext, activeFrame);
+            }
+        }
+
+        for (int i = activeEntries.Count - 1; i >= 0; i--)
+        {
+            var entry = activeEntries[i];
+            if (CurrentFrame >= entry.EndFrame)
+            {
+                entry.effect?.OnEnd(gameObject, CurrentContext);
+                activeEntries.RemoveAt(i);
+            }
+        }
+
+        if (CurrentFrame >= CurrentAction.totalFrames)
         {
             EndAction();
         }
     }
 
-    private float GetActionDuration()
-    {
-        if (CurrentAction == null) return 0f;
-        return CurrentAction.duration > 0f ? CurrentAction.duration : 0.5f;
-    }
-
-    public void EndAction()
-    {
-        if (!IsActive)
-            return;
-
-        Debug.Log($"{name} → ACTION END → {CurrentAction.actionName}");
-
-        CleanupAction();
-    }
-
-    public void InterruptAction()
-    {
-        if (!IsActive)
-            return;
-
-        Debug.Log(
-            $"{name} → ACTION INTERRUPTED → {CurrentAction.actionName}"
-        );
-
-        CleanupAction();
-
-        CurrentAction = null;
-        actionTimer = 0f;
-    }
+    public void EndAction() => CleanupAction();
+    public void InterruptAction() => CleanupAction();
 
     private void CleanupAction()
     {
-        movement.SetMovementLock(MovementLockSource.Action, false);
-        movement.StopDisplacement();
-        CloseHitboxes();
+        frameClock.StopClock();
+
+        for (int i = 0; i < activeEntries.Count; i++)
+        {
+            activeEntries[i].effect?.OnEnd(gameObject, CurrentContext);
+        }
+        activeEntries.Clear();
+
+        fighterAnimator?.StopAction(0.1f);
+
+        movement?.SetMovementLock(MovementLockSource.Action, false);
+        fighterAnimator?.SetActionPlaying(false);
 
         CurrentAction = null;
-        actionTimer = 0f;
-
-        if (fighter != null && fighter.FighterAnimator != null)
-        {
-            fighter.FighterAnimator.SetActionPlaying(false);
-        }
+        CurrentContext = default;
+        CurrentFrame = 0;
     }
 
-    private void CloseHitboxes()
+    private bool CanInterruptCurrentAction(ActionData newAction)
     {
-        if (fighter == null)
-            return;
+        if (CurrentAction == null) return true;
+        if (newAction.priority > CurrentAction.priority) return true;
+        if (CurrentAction.canBeCanceledOnHit && CurrentFrame >= CurrentAction.cancelStartFrame) return true;
 
-        fighter.AnimEvent_CloseHitbox(0);
-        fighter.AnimEvent_CloseHitbox(1);
-        fighter.AnimEvent_CloseHitbox(2);
-        fighter.AnimEvent_CloseHitbox(3);
-        fighter.AnimEvent_CloseHitbox(4);
+        return false;
     }
 }

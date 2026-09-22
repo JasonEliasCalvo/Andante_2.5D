@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterMovement))]
 public class ReactionSystem : MonoBehaviour
 {
     public enum ReactionState
@@ -14,19 +13,14 @@ public class ReactionSystem : MonoBehaviour
 
     [Header("Runtime")]
     public ReactionState CurrentReaction { get; private set; }
-
     public bool IsReacting => CurrentReaction != ReactionState.None;
 
     private CharacterMovement movement;
     private ActionSystem actionSystem;
-
     private FighterAnimator fighterAnimator;
-    private Animator animator;
 
     private float reactionTimer;
-
     private bool mirrorToggle;
-
     private static readonly int MirrorHitHash = Animator.StringToHash("MirrorHit");
 
     private void Awake()
@@ -35,15 +29,11 @@ public class ReactionSystem : MonoBehaviour
         actionSystem = GetComponent<ActionSystem>();
 
         fighterAnimator = GetComponent<FighterAnimator>();
-        animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
-        if (!IsReacting)
-            return;
-
-        if (CurrentReaction == ReactionState.Dead)
+        if (!IsReacting || CurrentReaction == ReactionState.Dead)
             return;
 
         reactionTimer -= Time.deltaTime;
@@ -60,27 +50,19 @@ public class ReactionSystem : MonoBehaviour
             return;
 
         if (actionSystem != null && actionSystem.IsActive)
-        {
             actionSystem.InterruptAction();
-        }
 
         CurrentReaction = ReactionState.Hit;
         reactionTimer = Mathf.Max(0f, duration);
 
-        movement.SetMovementLock(
-            MovementLockSource.Reaction,
-            true
-        );
-
-        movement.StopHorizontalMovement();
+        movement?.SetMovementLock(MovementLockSource.Reaction, true);
+        movement?.StopHorizontalMovement();
 
         mirrorToggle = !mirrorToggle;
 
-        if (animator != null)
+        if (fighterAnimator != null)
         {
-            animator.SetBool(MirrorHitHash, mirrorToggle);
-
-            animator.Play("Hit", -1, 0f);
+            fighterAnimator.PlayReaction("Hit");
         }
 
         CloseHitboxes();
@@ -92,57 +74,36 @@ public class ReactionSystem : MonoBehaviour
             return;
 
         if (actionSystem != null && actionSystem.IsActive)
-        {
             actionSystem.InterruptAction();
-        }
 
         CurrentReaction = ReactionState.Dead;
 
-        movement.SetMovementLock(
-            MovementLockSource.Reaction,
-            true
-        );
-
-        movement.StopHorizontalMovement();
+        movement?.SetMovementLock(MovementLockSource.Reaction, true);
+        movement?.StopHorizontalMovement();
 
         if (movement.Controller != null)
-        {
             movement.Controller.enabled = false;
-        }
 
-        animator?.CrossFade("Death", 0.1f);
+        fighterAnimator.PlayReaction("Death", 0.1f);
     }
 
     public void EndReaction()
     {
-        if (CurrentReaction == ReactionState.Dead)
-            return;
+        if (CurrentReaction == ReactionState.Dead) return;
 
-        CurrentReaction =
-            ReactionState.None;
-
+        CurrentReaction = ReactionState.None;
         reactionTimer = 0f;
 
-        movement.SetMovementLock(
-            MovementLockSource.Reaction,
-            false
-        );
-
+        movement?.SetMovementLock(MovementLockSource.Reaction, false);
         mirrorToggle = false;
     }
 
     private void CloseHitboxes()
     {
-        FighterEntity fighter =
-            GetComponent<FighterEntity>();
+        FighterEntity fighter = GetComponent<FighterEntity>();
+        if (fighter == null) return;
 
-        if (fighter == null)
-            return;
-
-        fighter.AnimEvent_CloseHitbox(0);
-        fighter.AnimEvent_CloseHitbox(1);
-        fighter.AnimEvent_CloseHitbox(2);
-        fighter.AnimEvent_CloseHitbox(3);
-        fighter.AnimEvent_CloseHitbox(4);
+        for (int i = 0; i < 5; i++)
+            fighter.AnimEvent_CloseHitbox(i);      
     }
 }

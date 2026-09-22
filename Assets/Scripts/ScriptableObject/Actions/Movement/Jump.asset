@@ -13,17 +13,22 @@ MonoBehaviour:
   m_Name: Jump
   m_EditorClassIdentifier: Assembly-CSharp::ActionData
   actionName: Jump
-  actionType: 1
+  actionType: 2
+  priority: 2
   inputType: 2
   allowedDirections: -1
-  animationStateName: Jump
-  duration: 0.5
+  totalFrames: 60
+  animation: {fileID: 7400000, guid: a17fba7db5b0992408e658bd7ac5adee, type: 2}
   lockHorizontalMovement: 0
+  cancelStartFrame: 0
+  canBeCanceledOnHit: 1
   conditions:
   - rid: 1691038069479702636
-  effects:
-  - rid: 1691038069479702637
-  - rid: 1691038247547568209
+  timeline:
+  - startFrame: 0
+    durationFrames: 1
+    effect:
+      rid: 1691038361932529734
   references:
     version: 2
     RefIds:
@@ -31,12 +36,8 @@ MonoBehaviour:
       type: {class: GroundedCondition, ns: , asm: Assembly-CSharp}
       data:
         allowCoyoteTime: 1
-    - rid: 1691038069479702637
+    - rid: 1691038361932529734
       type: {class: DisplacementEffct, ns: , asm: Assembly-CSharp}
       data:
         displacement: {fileID: 11400000, guid: fb8dbc81b8f23374298b738b06ad3e63, type: 2}
         directionMode: 0
-    - rid: 1691038247547568209
-      type: {class: AudioEffect, ns: , asm: Assembly-CSharp}
-      data:
-        audioClip: {fileID: 8300000, guid: 8a1b1cb8edf4788469a774729a0bb81d, type: 3}

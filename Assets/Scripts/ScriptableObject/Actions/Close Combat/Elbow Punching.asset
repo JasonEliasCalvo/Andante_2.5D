@@ -14,15 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Elbow Punching
   actionType: 0
+  priority: 1
   inputType: 0
   allowedDirections: 3
+  totalFrames: 30
   animationStateName: Elbow Punching
-  duration: 0.5
   lockHorizontalMovement: 1
+  cancelStartFrame: 0
+  canBeCanceledOnHit: 1
   conditions:
   - rid: 1691038069479702638
-  effects:
-  - rid: 1691038069479702639
+  timeline:
+  - startFrame: 5
+    durationFrames: 5
+    effect:
+      rid: 1691038361932529737
   references:
     version: 2
     RefIds:
@@ -30,7 +36,8 @@ MonoBehaviour:
       type: {class: GroundedCondition, ns: , asm: Assembly-CSharp}
       data:
         allowCoyoteTime: 0
-    - rid: 1691038069479702639
-      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+    - rid: 1691038361932529737
+      type: {class: HitboxEffect, ns: , asm: Assembly-CSharp}
       data:
+        hitboxIndex: 0
         attackData: {fileID: 11400000, guid: ddb7149752df2ae40b04c6f7dc21bbbb, type: 2}

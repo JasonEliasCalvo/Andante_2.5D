@@ -46,6 +46,7 @@ public class LocomotionSystem : MonoBehaviour
 
     [Header("Nombres de Animaciones")]
     [SerializeField] private string fallAnimState = "Fall";
+    [SerializeField] private string fallLandAnimState = "Fall_Land";
 
     private void Awake()
     {
@@ -108,13 +109,28 @@ public class LocomotionSystem : MonoBehaviour
             float maxSpeed = movement.LocomotionData != null ? movement.LocomotionData.walkSpeed : 1f;
             float blendValue = Mathf.Clamp01(speed / maxSpeed);
 
+            if (fighterAnimator != null && fighterAnimator.IsActionPlaying) return;
+
             fighterAnimator.SetLocomotionBlend(blendValue);
         }
         else if (Phase == LocomotionPhase.Airborne)
         {
             if (SubPhase == LocomotionSubPhase.Falling)
             {
-                fighterAnimator.PlayAction(fallAnimState, 0.15f);
+                if (fighterAnimator != null && fighterAnimator.IsActionPlaying) return;
+
+                bool isCurrentlyFalling = fighterAnimator.Animator.GetCurrentAnimatorStateInfo(0).IsName(fallAnimState);
+                bool isCurrentlyFallLand = fighterAnimator.Animator.GetCurrentAnimatorStateInfo(0).IsName(fallLandAnimState);
+                bool isTransitioningToFall = fighterAnimator.Animator.IsInTransition(0) && fighterAnimator.Animator.GetNextAnimatorStateInfo(0).IsName(fallAnimState);
+                bool isTransitioningToFallLand = fighterAnimator.Animator.IsInTransition(0) && fighterAnimator.Animator.GetNextAnimatorStateInfo(0).IsName(fallLandAnimState);
+
+                if (isCurrentlyFalling || isTransitioningToFall)
+                    return;
+
+                if (isCurrentlyFallLand || isTransitioningToFallLand)
+                    return;
+
+                fighterAnimator.PlayAnimation(fallAnimState, 0.15f);
             }
         }
     }

@@ -4,26 +4,33 @@ using UnityEngine;
 [Serializable]
 public abstract class ActionEffect
 {
-    public abstract void Execute(GameObject user, ActionContext context);
+    public virtual void OnStart(GameObject user, ActionContext context) { }
+
+    public virtual void OnUpdate(GameObject user, ActionContext context, int activeFrame) { }
+
+    public virtual void OnEnd(GameObject user, ActionContext context) { }
 }
 
 [Serializable]
 public class DisplacementEffct : ActionEffect
 {
-    public enum DisplacementDirectionMode {
-        Forward,            
-        Backward,           
-        Left,               
-        Right,              
-        InputDirection,     
+    public enum DisplacementDirectionMode
+    {
+        Forward,
+        Backward,
+        Left,
+        Right,
+        InputDirection,
         TargetRelative
     }
 
     public DisplacementData displacement;
     public DisplacementDirectionMode directionMode = DisplacementDirectionMode.Forward;
 
-    public override void Execute(GameObject user, ActionContext context)
+    public override void OnStart(GameObject user, ActionContext context)
     {
+        Debug.Log($"DisplacementEffect OnStart called for user: {user.name}, context: {context}");
+
         if (displacement == null) return;
         if (!user.TryGetComponent<CharacterMovement>(out var movement)) return;
 
@@ -60,12 +67,36 @@ public class DisplacementEffct : ActionEffect
 
 
 [Serializable]
-public class DamageEffect : ActionEffect
+public class HitboxEffect : ActionEffect
 {
+    public int hitboxIndex = 0;
     public AttackData attackData;
-    public override void Execute(GameObject user, ActionContext context)
+    public override void OnStart(GameObject user, ActionContext context)
     {
+        var fighter = user.GetComponent<FighterEntity>();
+        fighter?.AnimEvent_OpenHitbox(hitboxIndex, attackData);
+    }
 
+    public override void OnEnd(GameObject user, ActionContext context)
+    {
+        var fighter = user.GetComponent<FighterEntity>();
+        fighter?.AnimEvent_CloseHitbox(hitboxIndex);
+    }
+}
+
+[Serializable]
+public class InvincibilityEffect : ActionEffect
+{
+    public override void OnStart(GameObject user, ActionContext context)
+    {
+        var health = user.GetComponent<FighterEntity>();
+        if (health != null) health.IsInvulnerable = true;
+    }
+
+    public override void OnEnd(GameObject user, ActionContext context)
+    {
+        var health = user.GetComponent<FighterEntity>();
+        if (health != null) health.IsInvulnerable = false;
     }
 }
 
@@ -73,7 +104,7 @@ public class DamageEffect : ActionEffect
 public class AudioEffect : ActionEffect
 {
     public AudioClip audioClip;
-    public override void Execute(GameObject user, ActionContext context)
+    public override void OnStart(GameObject user, ActionContext context)
     {
         if (audioClip == null) return;
         if (AudioManager.Instance == null) return;

@@ -122,33 +122,19 @@ public abstract class FighterEntity : MonoBehaviour, IDamageable
     }
 
     // --- HITBOXES ---
-    public void AnimEvent_OpenHitbox(int limbIndex)
+    public void AnimEvent_OpenHitbox(int limbIndex, AttackData attack)
     {
-        ActionData action = actionSystem.CurrentAction;
-        if (action == null) return;
-
-        DamageEffect damageEffect = null;
-        for (int i = 0; i < action.effects.Count; i++)
-        {
-            if (action.effects[i] is DamageEffect effect)
-            {
-                damageEffect = effect;
-                break;
-            }
-        }
-
-        if (damageEffect == null || damageEffect.attackData == null) return;
+        if (attack == null) return;
 
         CombatHitbox target = GetHitbox(limbIndex);
         if (target == null) return;
 
-        target.EnableHitbox(damageEffect.attackData, action);
+        target.EnableHitbox(attack);
     }
 
     public void AnimEvent_CloseHitbox(int limbIndex)
     {
         CombatHitbox targetBox = GetHitbox(limbIndex);
-
         targetBox?.DisableHitbox();
     }
 
@@ -163,29 +149,6 @@ public abstract class FighterEntity : MonoBehaviour, IDamageable
             4 => weaponBox,
             _ => null
         };
-    }
-
-    public void AnimEvent_PlaySwingSound()
-    {
-        ActionData action = actionSystem.CurrentAction;
-
-        if (action == null)
-            return;
-    }
-
-    public void AnimEvent_SpawnAttackParticle(int limbIndex)
-    {
-        ActionData action = actionSystem.CurrentAction;
-        Transform targetTransform = transform;
-
-        switch (limbIndex)
-        {
-            case 0: if (rightHandBox != null) targetTransform = rightHandBox.transform; break;
-            case 1: if (leftHandBox != null) targetTransform = leftHandBox.transform; break;
-            case 2: if (rightFootBox != null) targetTransform = rightFootBox.transform; break;
-            case 3: if (leftFootBox != null) targetTransform = leftFootBox.transform; break;
-            case 4: if (weaponBox != null) targetTransform = weaponBox.transform; break;
-        }
     }
 
     public void AnimEvent_PlayAudioDirect(AudioClip clip)

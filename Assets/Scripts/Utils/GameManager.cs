@@ -101,7 +101,6 @@ public class GameManager : MonoBehaviour
         if (!anyPlayerNear && pl.Length > 0)
         {
             HidePanels();
-            Debug.Log("No hay jugadores cerca de zonas interactivas.");
         }
     }
 
