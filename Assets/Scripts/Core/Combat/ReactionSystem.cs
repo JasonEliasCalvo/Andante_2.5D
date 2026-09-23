@@ -54,7 +54,7 @@ public class ReactionSystem : MonoBehaviour
 
         mirrorToggle = !mirrorToggle;
 
-        fighter.FighterAnimator.PlayReaction("Hit");
+        fighter.Visuals.PlayReaction("Hit");
 
         CloseHitboxes();
     }
@@ -72,7 +72,7 @@ public class ReactionSystem : MonoBehaviour
 
         fighter.Movement.Controller.enabled = false;
 
-        fighter.FighterAnimator.PlayReaction("Death", 0.1f);
+        fighter.Visuals.PlayReaction("Death", 0.1f);
     }
 
     public void EndReaction()

@@ -20,8 +20,8 @@ public class LocomotionSystem : MonoBehaviour
 {
     [Header("References")]
     private CharacterMovement movement;
-    private FighterAnimator fighterAnimator;
-    private ActionSimulationRunner AactionSimulationRunner;
+    [SerializeField] private FighterEntity fighterEntity;
+    private ActionSimulationRunner ActionSimulationRunner;
 
     [Header("Current Locomotion")]
     public LocomotionPhase Phase { get; private set; }
@@ -44,15 +44,21 @@ public class LocomotionSystem : MonoBehaviour
     [SerializeField] private float coyoteDuration = 0.15f;
     private float coyoteTimer;
 
-    [Header("Nombres de Animaciones")]
+    [Header("Animaciones")]
     [SerializeField] private string fallAnimState = "Fall";
     [SerializeField] private string fallLandAnimState = "Fall_Land";
+    [SerializeField] private string locomotionBlendParam = "LocomotionBlend";
+    [SerializeField] private float blendDampTime = 0.1f;
+
+    private int locomotionBlendHash;
 
     private void Awake()
     {
         if (movement == null) movement = GetComponent<CharacterMovement>();
-        if (fighterAnimator == null) fighterAnimator = GetComponent<FighterAnimator>();
-        if (AactionSimulationRunner == null) AactionSimulationRunner = GetComponent<ActionSimulationRunner>();
+        if (fighterEntity == null) fighterEntity = GetComponent<FighterEntity>();
+        if (ActionSimulationRunner == null) ActionSimulationRunner = GetComponent<ActionSimulationRunner>();
+
+        locomotionBlendHash = Animator.StringToHash(locomotionBlendParam);
     }
 
     private void Update()
@@ -60,7 +66,7 @@ public class LocomotionSystem : MonoBehaviour
         UpdateGroundedAndCoyote();
         UpdateLocomotionPhases();
 
-        if (AactionSimulationRunner == null)
+        if (ActionSimulationRunner != null)
         {
             UpdateLocomotionAnimations();
         }
@@ -109,28 +115,15 @@ public class LocomotionSystem : MonoBehaviour
             float maxSpeed = movement.LocomotionData != null ? movement.LocomotionData.walkSpeed : 1f;
             float blendValue = Mathf.Clamp01(speed / maxSpeed);
 
-            if (fighterAnimator != null && fighterAnimator.IsActionPlaying) return;
-
-            fighterAnimator.SetLocomotionBlend(blendValue);
+            if (fighterEntity == null && fighterEntity.Visuals == null) return;
+            
+            fighterEntity.Visuals.SetLocomotionBlend(locomotionBlendHash, blendValue, blendDampTime);
         }
         else if (Phase == LocomotionPhase.Airborne)
         {
             if (SubPhase == LocomotionSubPhase.Falling)
             {
-                if (fighterAnimator != null && fighterAnimator.IsActionPlaying) return;
-
-                bool isCurrentlyFalling = fighterAnimator.Animator.GetCurrentAnimatorStateInfo(0).IsName(fallAnimState);
-                bool isCurrentlyFallLand = fighterAnimator.Animator.GetCurrentAnimatorStateInfo(0).IsName(fallLandAnimState);
-                bool isTransitioningToFall = fighterAnimator.Animator.IsInTransition(0) && fighterAnimator.Animator.GetNextAnimatorStateInfo(0).IsName(fallAnimState);
-                bool isTransitioningToFallLand = fighterAnimator.Animator.IsInTransition(0) && fighterAnimator.Animator.GetNextAnimatorStateInfo(0).IsName(fallLandAnimState);
-
-                if (isCurrentlyFalling || isTransitioningToFall)
-                    return;
-
-                if (isCurrentlyFallLand || isTransitioningToFallLand)
-                    return;
-
-                fighterAnimator.PlayAnimation(fallAnimState, 0.15f);
+ 
             }
         }
     }

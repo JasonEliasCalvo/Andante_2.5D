@@ -348,12 +348,6 @@ PrefabInstance:
       addedObject: {fileID: 2140552938913009545}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 542975bd382b083468841ce2eb1bce54, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1814028026524224934}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 542975bd382b083468841ce2eb1bce54, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6903238795873729273}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 542975bd382b083468841ce2eb1bce54, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 3959833022609236485}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 542975bd382b083468841ce2eb1bce54, type: 3}
       insertIndex: -1
@@ -539,9 +533,9 @@ MonoBehaviour:
   audioSource: {fileID: 2419410846301985866}
   movement: {fileID: 70271582842871367}
   locomotionSystem: {fileID: 5544314111958984542}
-  actionSystem: {fileID: 6903238795873729273}
+  actionSimulationRunner: {fileID: 0}
   reactionSystem: {fileID: 3959833022609236485}
-  fighterAnimator: {fileID: 1814028026524224934}
+  visuals: {fileID: 0}
   onDeathEnd:
     m_PersistentCalls:
       m_Calls: []
@@ -622,34 +616,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputSource
   cameraTransform: {fileID: 0}
---- !u!114 &1814028026524224934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 627138049207603567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a42d501db0ed4d4dbf2ba74c8c62c79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FighterAnimator
-  animator: {fileID: 1717006971811492709}
-  playableActionSystem: {fileID: 2779759456775129535}
-  locomotionBlendParam: LocomotionBlend
-  blendDampTime: 0.1
---- !u!114 &6903238795873729273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 627138049207603567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a38fbb67361fc1c48a6b26cd0666ae94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ActionSystem
 --- !u!114 &3959833022609236485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -678,6 +644,8 @@ MonoBehaviour:
   coyoteDuration: 0.15
   fallAnimState: Fall
   fallLandAnimState: Fall_Land
+  locomotionBlendParam: LocomotionBlend
+  blendDampTime: 0.1
 --- !u!114 &2493857939613371282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -691,7 +659,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionFrameClock
   targetFPS: 60
-  manualAnimatorUpdate: 0
+  maxTicksPerFrame: 5
 --- !u!114 &3352529446377826173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -706,7 +674,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterFeedback
   movement: {fileID: 70271582842871367}
   locomotion: {fileID: 5544314111958984542}
-  actionSystem: {fileID: 6903238795873729273}
+  actionSimulationRunner: {fileID: 0}
   characterSource: {fileID: 2419410846301985866}
   landSound: {fileID: 8300000, guid: f3d0fe8c9e13d5e4394f0aa033ab5d8e, type: 3}
   footstepClips:

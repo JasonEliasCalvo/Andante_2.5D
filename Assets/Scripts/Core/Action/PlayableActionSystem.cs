@@ -25,9 +25,11 @@ public class PlayableActionSystem : MonoBehaviour
     private Animator animator;
     private float hitStopTimer;
 
+    public Animator Animator { get => animator; set => animator = value; }
+
     private void Awake()
     {
-        animator = GetComponent<Animator>();
+        Animator = GetComponent<Animator>();
         InitializeGraph();
     }
 
@@ -40,13 +42,13 @@ public class PlayableActionSystem : MonoBehaviour
         // 2. Mixer de 3 entradas
         mixer = AnimationMixerPlayable.Create(graph, 3);
         // 3. Conectar el Animator Controller original a la entrada 0 (Locomoción/Caída/Land)
-        if (animator.runtimeAnimatorController != null)
+        if (Animator.runtimeAnimatorController != null)
         {
-            locomotionPlayable = AnimatorControllerPlayable.Create(graph, animator.runtimeAnimatorController);
+            locomotionPlayable = AnimatorControllerPlayable.Create(graph, Animator.runtimeAnimatorController);
             graph.Connect(locomotionPlayable, 0, mixer, 0);
         }
 
-        var output = AnimationPlayableOutput.Create(graph, "Animation", animator);
+        var output = AnimationPlayableOutput.Create(graph, "Animation", Animator);
         output.SetSourcePlayable(mixer);
 
         currentWeights[0] = 1f;
@@ -56,9 +58,6 @@ public class PlayableActionSystem : MonoBehaviour
         graph.Play();
     }
 
-    /// <summary>
-    /// Ejecuta un clip de acción INMEDIATAMENTE sin lag de frame.
-    /// </summary>
     public void PlayAction(AnimationClip clip, float fadeDuration = -1f)
     {
         if (clip == null) return;
@@ -105,9 +104,6 @@ public class PlayableActionSystem : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// Vuelve a la locomoción (Animator Controller) de forma suave.
-    /// </summary>
     public void StopAction(float fadeDuration = -1f)
     {
         if (activeSlotIndex == -1) return;
@@ -124,11 +120,36 @@ public class PlayableActionSystem : MonoBehaviour
         activeSlotIndex = -1;
     }
 
+    public void PlayReaction(string stateName, float crossfadeDuration = 0.05f)
+    {
+        if (Animator != null && !string.IsNullOrEmpty(stateName))
+        {
+            Animator.CrossFade(stateName, crossfadeDuration);
+        }
+    }
+
+    public void PlayAnimation(string stateName, float crossfadeDuration = 0.05f)
+    {
+        if (Animator != null && !string.IsNullOrEmpty(stateName))
+        {
+            Animator.CrossFade(stateName, crossfadeDuration);
+        }
+    }
+
+    // Usando el Hash del parámetro (Int) - Más optimizado
+    public void SetLocomotionBlend(int paramHash, float blendValue, float blendDampTime = 0.1f)
+    {
+        if (activeSlotIndex != -1 || Animator == null) return;
+
+        Debug.Log($"[PlayableActionSystem] SetLocomotionBlend: ParamHash={paramHash}, BlendValue={blendValue}, DampTime={blendDampTime}");
+
+        Animator.SetFloat(paramHash, blendValue, blendDampTime, Time.deltaTime);
+    }
+
     private void Update()
     {
         HandleHitStop();
         UpdateWeights();
-        UpdateLocomotionState(GetComponent<LocomotionSystem>());
     }
 
     private void UpdateWeights()
@@ -144,14 +165,21 @@ public class PlayableActionSystem : MonoBehaviour
         }
     }
 
-    public void UpdateLocomotionState(LocomotionSystem locomotion)
+    public void UpdateLocomotionState(bool isGrounded, bool isFalling)
     {
-        if (activeSlotIndex == -1)
+        if (Animator != null)
         {
-            locomotionPlayable.SetBool("IsFalling", locomotion.SubPhase == LocomotionSubPhase.Falling);
-            locomotionPlayable.SetBool("IsGrounded", locomotion.IsGrounded);
+            Animator.SetBool("IsGrounded", isGrounded);
+            Animator.SetBool("IsFalling", isFalling);
         }
     }
+
+    #region Proxies para el Animator Controller
+    public void SetFloat(string name, float value) => Animator.SetFloat(name, value);
+    public void SetBool(string name, bool value) => Animator.SetBool(name, value);
+    public void SetInteger(string name, int value) => Animator.SetInteger(name, value);
+    public void SetTrigger(string name) => Animator.SetTrigger(name);
+    #endregion
 
     public void ApplyHitStop(float duration)
     {
@@ -187,13 +215,6 @@ public class PlayableActionSystem : MonoBehaviour
             }
         }
     }
-
-    #region Proxies para el Animator Controller
-    public void SetFloat(string name, float value) => locomotionPlayable.SetFloat(name, value);
-    public void SetBool(string name, bool value) => locomotionPlayable.SetBool(name, value);
-    public void SetInteger(string name, int value) => locomotionPlayable.SetInteger(name, value);
-    public void SetTrigger(string name) => locomotionPlayable.SetTrigger(name);
-    #endregion
 
     #region Helpers
     public float GetActionNormalizedTime()

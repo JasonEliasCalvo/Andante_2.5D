@@ -2,37 +2,40 @@ using UnityEngine;
 
 public class ActionSimulationRunner : MonoBehaviour
 {
-    [Header("Configuración de Simulación")]
-    [SerializeField] private int targetFPS = 60;
-    [SerializeField] private int maxTicksPerFrame = 5;
-
     [Header("Referencias de Unity")]
-    private CharacterMovement movement;
-    private PlayableActionSystem playableActionSystem;
+    private FighterEntity fighterEntity;
 
     private ActionSimulation simulation;
-    private float timePerTick;
-    private float accumulator = 0f;
-
     public ActionData CurrentAction => simulation != null ? simulation.CurrentAction : null;
+    public bool IsActive => simulation != null && simulation.IsActive;
 
     private void Awake()
     {
-        movement = GetComponent<CharacterMovement>();
-        playableActionSystem = GetComponent<PlayableActionSystem>();
+
+        fighterEntity = GetComponent<FighterEntity>();
 
         // 1. Creamos la simulación (le pasamos el gameObject para los efectos actuales)
         simulation = new ActionSimulation(gameObject);
-        timePerTick = 1f / targetFPS;
 
-        // 2. Nos suscribimos a los eventos del Cerebro
         simulation.OnActionStarted += HandleActionStarted;
         simulation.OnActionEnded += HandleActionEnded;
     }
 
+    private void Start()
+    {
+        // Al nacer, nos suscribimos al Reloj Global
+        if (CombatTickManager.Instance != null)
+            CombatTickManager.Instance.RegisterRunner(this);
+        else
+            Debug.LogWarning($"[{gameObject.name}] No hay CombatTickManager en la escena.");
+    }
+
     private void OnDestroy()
     {
-        // Limpiamos memoria
+        // Al morir, nos damos de baja
+        if (CombatTickManager.Instance != null)
+            CombatTickManager.Instance.UnregisterRunner(this);
+
         if (simulation != null)
         {
             simulation.OnActionStarted -= HandleActionStarted;
@@ -40,47 +43,42 @@ public class ActionSimulationRunner : MonoBehaviour
         }
     }
 
-    private void Update()
+    // ------------------------------------------------------------------
+    public void TickLogic()
     {
-        accumulator += Time.deltaTime;
-        int ticksProcessed = 0;
-
-        while (accumulator >= timePerTick && ticksProcessed < maxTicksPerFrame)
-        {
-            simulation.AdvanceFrame();
-            //locomotionSystem.Tick();
-
-            accumulator -= timePerTick;
-            ticksProcessed++;
-        }
-
-        if (ticksProcessed == maxTicksPerFrame) accumulator = 0f;
+        simulation.AdvanceFrame();
     }
 
+    public void TickVisuals()
+    {
+        // Actualizamos los parámetros del BlendTree de locomoción
+        if (fighterEntity.Locomotion != null && fighterEntity.Visuals != null)
+        {
+            fighterEntity.Visuals.UpdateLocomotionState(fighterEntity.Locomotion.IsGrounded, fighterEntity.Locomotion.SubPhase == LocomotionSubPhase.Falling);
+        }
+    }
+
+    // ------------------------------------------------------------------
     public bool RequestAction(ActionData action, ActionContext context)
     {
         return simulation.StartAction(action, context);
     }
 
+    public void InterruptAction()
+    {
+        if (simulation != null && simulation.IsActive) simulation.InterruptAction();
+    }
+
     private void HandleActionStarted(ActionData action)
     {
-        // El cerebro dijo que la acción empezó. Unity hace el trabajo visual.
-        movement?.SetMovementLock(MovementLockSource.Action, action.lockHorizontalMovement);
-        playableActionSystem?.PlayAction(action.animation, 0f);
+        fighterEntity.Movement?.SetMovementLock(MovementLockSource.Action, action.lockHorizontalMovement);
+        fighterEntity.Visuals?.PlayAction(action.animation, 0f);
     }
 
     private void HandleActionEnded()
     {
-        // El cerebro dijo que la acción terminó. Liberamos a Unity.
-        movement?.SetMovementLock(MovementLockSource.Action, false);
-        playableActionSystem?.StopAction(0.1f);
+        fighterEntity.Movement?.SetMovementLock(MovementLockSource.Action, false);
+        fighterEntity.Visuals?.StopAction(0.1f);
     }
 
-    public void InterruptAction()
-    {
-        if (simulation != null && simulation.IsActive)
-        {
-            simulation.InterruptAction();
-        }
-    }
 }

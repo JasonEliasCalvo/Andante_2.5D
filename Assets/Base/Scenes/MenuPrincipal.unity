@@ -1216,6 +1216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 436905486}
   - component: {fileID: 436905487}
+  - component: {fileID: 436905488}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1258,6 +1259,20 @@ MonoBehaviour:
   DefaultCam: {fileID: 330585543}
   checkInterval: 0.2
   checkTimer: 0
+--- !u!114 &436905488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 436905484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc1e2d7a837bac34ca4343c3b133692e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatTickManager
+  targetFPS: 60
+  maxTicksPerFrame: 5
 --- !u!1001 &465469816
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4337,6 +4352,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6903238795873729273, guid: 2d18bdfe5ae7d604797aad2238bf18d7, type: 3}
+    - {fileID: 1814028026524224934, guid: 2d18bdfe5ae7d604797aad2238bf18d7, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

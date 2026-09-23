@@ -13,7 +13,7 @@ public abstract class FighterEntity : MonoBehaviour, IDamageable
     [SerializeField] protected ActionSimulationRunner actionSimulationRunner;
     [SerializeField] protected ActionResolver actionResolver;
     [SerializeField] protected ReactionSystem reactionSystem;
-    [SerializeField] protected FighterAnimator fighterAnimator;
+    [SerializeField] protected PlayableActionSystem visuals;
 
     [Space(10)]
     public UnityEvent onDeathEnd;
@@ -43,10 +43,7 @@ public abstract class FighterEntity : MonoBehaviour, IDamageable
     public LocomotionSystem Locomotion => locomotionSystem;
     public ActionSimulationRunner Actions => actionSimulationRunner;
     public ReactionSystem Reactions => reactionSystem;
-
-    public FighterAnimator FighterAnimator => fighterAnimator;
-
-    public Animator Animator => animator;
+    public PlayableActionSystem Visuals => visuals;
 
 
     protected virtual void Awake()
@@ -60,7 +57,7 @@ public abstract class FighterEntity : MonoBehaviour, IDamageable
         actionSimulationRunner = GetComponent<ActionSimulationRunner>();
         reactionSystem = GetComponent<ReactionSystem>();
         actionResolver = new ActionResolver();
-        fighterAnimator = GetComponent<FighterAnimator>();
+        visuals = GetComponent<PlayableActionSystem>();
 
         if (movement != null && inputSource != null)
             movement.SetInputSource(inputSource);
