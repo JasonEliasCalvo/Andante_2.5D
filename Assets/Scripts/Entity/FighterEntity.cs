@@ -10,7 +10,7 @@ public abstract class FighterEntity : MonoBehaviour, IDamageable
 
     [SerializeField] protected CharacterMovement movement;
     [SerializeField] protected LocomotionSystem locomotionSystem;
-    [SerializeField] protected ActionSystem actionSystem;
+    [SerializeField] protected ActionSimulationRunner actionSimulationRunner;
     [SerializeField] protected ActionResolver actionResolver;
     [SerializeField] protected ReactionSystem reactionSystem;
     [SerializeField] protected FighterAnimator fighterAnimator;
@@ -41,9 +41,7 @@ public abstract class FighterEntity : MonoBehaviour, IDamageable
 
     public CharacterMovement Movement => movement;
     public LocomotionSystem Locomotion => locomotionSystem;
-
-    public ActionSystem Actions => actionSystem;
-
+    public ActionSimulationRunner Actions => actionSimulationRunner;
     public ReactionSystem Reactions => reactionSystem;
 
     public FighterAnimator FighterAnimator => fighterAnimator;
@@ -59,7 +57,7 @@ public abstract class FighterEntity : MonoBehaviour, IDamageable
         audioSource = GetComponent<AudioSource>();
         inputSource = GetComponent<CharacterInputSource>();
         locomotionSystem = GetComponent<LocomotionSystem>();
-        actionSystem = GetComponent<ActionSystem>();
+        actionSimulationRunner = GetComponent<ActionSimulationRunner>();
         reactionSystem = GetComponent<ReactionSystem>();
         actionResolver = new ActionResolver();
         fighterAnimator = GetComponent<FighterAnimator>();
@@ -118,7 +116,7 @@ public abstract class FighterEntity : MonoBehaviour, IDamageable
     // --- ACTIONS ---
     public bool ExecuteAction(ActionData action, ActionContext context)
     {
-        return actionSystem.StartAction(action, context);
+        return actionSimulationRunner.RequestAction(action, context);
     }
 
     // --- HITBOXES ---

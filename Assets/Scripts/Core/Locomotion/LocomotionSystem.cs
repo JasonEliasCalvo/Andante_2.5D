@@ -21,7 +21,7 @@ public class LocomotionSystem : MonoBehaviour
     [Header("References")]
     private CharacterMovement movement;
     private FighterAnimator fighterAnimator;
-    private ActionSystem actionSystem;
+    private ActionSimulationRunner AactionSimulationRunner;
 
     [Header("Current Locomotion")]
     public LocomotionPhase Phase { get; private set; }
@@ -52,7 +52,7 @@ public class LocomotionSystem : MonoBehaviour
     {
         if (movement == null) movement = GetComponent<CharacterMovement>();
         if (fighterAnimator == null) fighterAnimator = GetComponent<FighterAnimator>();
-        if (actionSystem == null) actionSystem = GetComponent<ActionSystem>();
+        if (AactionSimulationRunner == null) AactionSimulationRunner = GetComponent<ActionSimulationRunner>();
     }
 
     private void Update()
@@ -60,7 +60,7 @@ public class LocomotionSystem : MonoBehaviour
         UpdateGroundedAndCoyote();
         UpdateLocomotionPhases();
 
-        if (actionSystem == null || !actionSystem.IsActive)
+        if (AactionSimulationRunner == null)
         {
             UpdateLocomotionAnimations();
         }

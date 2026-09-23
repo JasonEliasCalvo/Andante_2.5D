@@ -78,13 +78,6 @@ public class PlayerFighter : FighterEntity
         if (Reactions.IsReacting)
             return;
 
-        if (Actions.IsActive)
-        {
-            // Más adelante aquí tendremos
-            // cancel windows.
-            return;
-        }
-
         if (!inputBuffer.TryPeek(out InputCommand command))
             return;
 

@@ -24,26 +24,7 @@ public class FighterAnimator : MonoBehaviour
 
         if (Animator != null) Animator.applyRootMotion = false;
     }
-
-    public void Update()
-    {
-        if (!IsActionPlaying)
-        {
-            UpdateAnimationParams();
-        }
-    }
     
-    public void UpdateAnimationParams()
-    {
-        if (playableActionSystem == null) return;
-
-        LocomotionSystem locomotion = GetComponent<LocomotionSystem>();
-
-        if (locomotion == null) return;
-
-        Animator.SetBool("IsFalling", locomotion.SubPhase == LocomotionSubPhase.Falling);
-        Animator.SetBool("IsGrounded", locomotion.IsGrounded);
-    }
     public void SetLocomotionBlend(float blendValue)
     {
         if (IsActionPlaying || Animator == null) return;

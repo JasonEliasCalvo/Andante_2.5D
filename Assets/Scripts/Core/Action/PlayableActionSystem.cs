@@ -104,6 +104,7 @@ public class PlayableActionSystem : MonoBehaviour
         activeSlotIndex = nextSlot;
     }
 
+
     /// <summary>
     /// Vuelve a la locomoción (Animator Controller) de forma suave.
     /// </summary>
@@ -127,6 +128,7 @@ public class PlayableActionSystem : MonoBehaviour
     {
         HandleHitStop();
         UpdateWeights();
+        UpdateLocomotionState(GetComponent<LocomotionSystem>());
     }
 
     private void UpdateWeights()
@@ -139,6 +141,15 @@ public class PlayableActionSystem : MonoBehaviour
                 currentWeights[i] = Mathf.MoveTowards(currentWeights[i], targetWeights[i], transitionSpeed * Time.deltaTime);
                 mixer.SetInputWeight(i, currentWeights[i]);
             }
+        }
+    }
+
+    public void UpdateLocomotionState(LocomotionSystem locomotion)
+    {
+        if (activeSlotIndex == -1)
+        {
+            locomotionPlayable.SetBool("IsFalling", locomotion.SubPhase == LocomotionSubPhase.Falling);
+            locomotionPlayable.SetBool("IsGrounded", locomotion.IsGrounded);
         }
     }
 

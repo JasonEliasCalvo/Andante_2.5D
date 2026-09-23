@@ -103,6 +103,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -148,7 +149,6 @@ GameObject:
   - component: {fileID: 8924873405502442020}
   - component: {fileID: 8713130446973173935}
   - component: {fileID: 1310239690398633093}
-  - component: {fileID: 2896253237005014970}
   m_Layer: 5
   m_Name: QuestionButton
   m_TagString: Untagged
@@ -259,21 +259,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2896253237005014970
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3006638192096865641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e3854d95c0fd6f41a9a4df8a0237330, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  answer: {fileID: 8537123052848715954}
-  button: {fileID: 1310239690398633093}
-  selectionIndicator: {fileID: 5136999594671128975}
 --- !u!1 &4552057720997308663
 GameObject:
   m_ObjectHideFlags: 0
@@ -574,6 +559,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0

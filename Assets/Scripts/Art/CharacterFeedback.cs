@@ -5,7 +5,7 @@ public class CharacterFeedback : MonoBehaviour
     [Header("References")]
     [SerializeField] private CharacterMovement movement;
     [SerializeField] private LocomotionSystem locomotion;
-    [SerializeField] private ActionSystem actionSystem;
+    [SerializeField] private ActionSimulationRunner actionSimulationRunner;
 
     [Header("Audio")]
     [SerializeField] private AudioSource characterSource;
@@ -25,8 +25,8 @@ public class CharacterFeedback : MonoBehaviour
         if (locomotion == null)
             locomotion = GetComponent<LocomotionSystem>();
 
-        if (actionSystem == null)
-            actionSystem = GetComponent<ActionSystem>();
+        if (actionSimulationRunner == null)
+            actionSimulationRunner = GetComponent<ActionSimulationRunner>();
     }
 
     public void HandleLanding()
