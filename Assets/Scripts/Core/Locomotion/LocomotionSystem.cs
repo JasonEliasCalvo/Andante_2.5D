@@ -19,112 +19,71 @@ public enum LocomotionSubPhase
 public class LocomotionSystem : MonoBehaviour
 {
     [Header("References")]
-    private CharacterMovement movement;
     [SerializeField] private FighterEntity fighterEntity;
-    private ActionSimulationRunner ActionSimulationRunner;
 
-    [Header("Current Locomotion")]
-    public LocomotionPhase Phase { get; private set; }
-    public LocomotionSubPhase SubPhase { get; private set; }
-
-
-    [Header("Runtime")]
-    public bool IsGrounded { get; private set; }
-    public bool IsCoyoteActive => coyoteTimer > 0f;
-    public bool IsAirborne { get; private set; }
-
-    public bool IsMoving { get; private set; }
-    public bool IsRising { get; private set; }
-    public bool IsFalling { get; private set; }
-
-    [SerializeField]
-    private float verticalThreshold = 3f;
-
-    [Header("Coyote Time")]
+    [Header("Config")]
     [SerializeField] private float coyoteDuration = 0.15f;
-    private float coyoteTimer;
+    [SerializeField] private float verticalThreshold = 3f;
 
-    [Header("Animaciones")]
-    [SerializeField] private string fallAnimState = "Fall";
-    [SerializeField] private string fallLandAnimState = "Fall_Land";
+    [Header("Animation")]
     [SerializeField] private string locomotionBlendParam = "LocomotionBlend";
     [SerializeField] private float blendDampTime = 0.1f;
-
+    private LocomotionStateMachine stateMachine;
     private int locomotionBlendHash;
+    // ============================================================
+    // PUBLIC API (proxy 1:1 hacia la state machine + movement)
+    // ============================================================
+    public LocomotionPhase Phase => stateMachine != null ? stateMachine.Phase : LocomotionPhase.Grounded;
+    public LocomotionSubPhase SubPhase => stateMachine != null ? stateMachine.SubPhase : LocomotionSubPhase.Idle;
+    public bool IsGrounded => fighterEntity.Movement != null && fighterEntity.Movement.IsGrounded;
+    public bool IsCoyoteActive => stateMachine != null && stateMachine.IsCoyoteActive;
+    public bool IsAirborne => Phase == LocomotionPhase.Airborne;
+    public bool IsMoving => SubPhase == LocomotionSubPhase.Moving;
+    public bool IsRising => SubPhase == LocomotionSubPhase.Rising;
+    public bool IsFalling => SubPhase == LocomotionSubPhase.Falling;
+
+    // LIFECYCLE
 
     private void Awake()
     {
-        if (movement == null) movement = GetComponent<CharacterMovement>();
         if (fighterEntity == null) fighterEntity = GetComponent<FighterEntity>();
-        if (ActionSimulationRunner == null) ActionSimulationRunner = GetComponent<ActionSimulationRunner>();
 
+        stateMachine = new LocomotionStateMachine(coyoteDuration, verticalThreshold);
         locomotionBlendHash = Animator.StringToHash(locomotionBlendParam);
     }
 
     private void Update()
     {
-        UpdateGroundedAndCoyote();
-        UpdateLocomotionPhases();
+        if (fighterEntity.Movement == null || stateMachine == null) return;
 
-        if (ActionSimulationRunner != null)
-        {
-            UpdateLocomotionAnimations();
-        }
+        // 1. Tick de la FSM pura
+        stateMachine.Tick(
+            isGrounded: fighterEntity.Movement.IsGrounded,
+            verticalVelocity: fighterEntity.Movement.EffectiveVerticalVelocity,
+            horizontalSpeed: fighterEntity.Movement.RuntimeData.desiredVelocity.magnitude,
+            deltaTime: Time.deltaTime);
+
+        if (fighterEntity.Actions != null)
+            UpdateLocomotionAnimation();
     }
-
-    private void UpdateGroundedAndCoyote()
+  
+    private void UpdateLocomotionAnimation()
     {
-        IsGrounded = movement.IsGrounded;
+        if (fighterEntity == null || fighterEntity.Visuals == null) return;
 
-        if (IsGrounded)
-            coyoteTimer = coyoteDuration;
-        else
-            coyoteTimer -= Time.deltaTime;
-    }
-
-    private void UpdateLocomotionPhases()
-    {
-        float verticalVel = movement.EffectiveVerticalVelocity;
-        float horizontalSpeed = movement.RuntimeData.desiredVelocity.magnitude;
-
-        if (IsGrounded)
-        {
-            Phase = LocomotionPhase.Grounded;
-            SubPhase = horizontalSpeed > 0.1f ? LocomotionSubPhase.Moving : LocomotionSubPhase.Idle;
-        }
-        else
-        {
-            Phase = LocomotionPhase.Airborne;
-
-            if (verticalVel > verticalThreshold)
-                SubPhase = LocomotionSubPhase.Rising;
-
-            else if (verticalVel < -verticalThreshold && !movement.IsGrounded)
-                SubPhase = LocomotionSubPhase.Falling;
-
-            else 
-                SubPhase = LocomotionSubPhase.Suspended;
-        }
-    }
-
-    private void UpdateLocomotionAnimations()
-    {
         if (Phase == LocomotionPhase.Grounded)
         {
-            float speed = movement.RuntimeData.desiredVelocity.magnitude;
-            float maxSpeed = movement.LocomotionData != null ? movement.LocomotionData.walkSpeed : 1f;
+            float speed = fighterEntity.Movement.RuntimeData.desiredVelocity.magnitude;
+            float maxSpeed = fighterEntity.Movement.LocomotionData != null
+                 ? fighterEntity.Movement.LocomotionData.walkSpeed
+                 : 1f;
             float blendValue = Mathf.Clamp01(speed / maxSpeed);
 
-            if (fighterEntity == null && fighterEntity.Visuals == null) return;
-            
             fighterEntity.Visuals.SetLocomotionBlend(locomotionBlendHash, blendValue, blendDampTime);
         }
+
         else if (Phase == LocomotionPhase.Airborne)
         {
-            if (SubPhase == LocomotionSubPhase.Falling)
-            {
- 
-            }
         }
     }
 }

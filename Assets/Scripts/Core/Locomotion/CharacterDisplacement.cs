@@ -13,19 +13,13 @@ public class CharacterDisplacement : MonoBehaviour
     private float currentFrameVerticalVelocity;
 
     public bool BlocksHorizontalMovement =>
-        IsDisplacing &&
-        currentData != null &&
-        currentData.blockHorizontalMovement;
-
+            IsDisplacing && currentData != null && currentData.blockHorizontalMovement;
     public bool UsesGravity =>
-        !IsDisplacing ||
-        currentData == null ||
-        currentData.applyGravityDuringDisplacement;
+        !IsDisplacing || currentData == null || currentData.applyGravityDuringDisplacement;
 
     public Vector3 CurrentFrameDelta => currentFrameDelta;
 
-    public Vector3 CurrentFrameVerticalDelta =>
-        new Vector3(0f, currentFrameDelta.y, 0f);
+    public Vector3 CurrentFrameVerticalDelta => new Vector3(0f, currentFrameDelta.y, 0f);
 
     public float CurrentFrameVerticalVelocity =>
         currentFrameVerticalVelocity;
@@ -56,10 +50,8 @@ public class CharacterDisplacement : MonoBehaviour
         currentData = data;
         elapsedTime = 0f;
         previousOffset = Vector3.zero;
-
         currentFrameDelta = Vector3.zero;
         currentFrameVerticalVelocity = 0f;
-
         IsDisplacing = true;
 
         return true;
@@ -72,7 +64,6 @@ public class CharacterDisplacement : MonoBehaviour
         elapsedTime = 0f;
         previousOffset = Vector3.zero;
         direction = Vector3.zero;
-
         currentFrameDelta = Vector3.zero;
         currentFrameVerticalVelocity = 0f;
     }
@@ -89,10 +80,9 @@ public class CharacterDisplacement : MonoBehaviour
 
         float normalizedTime = Mathf.Clamp01(elapsedTime / currentData.duration);
 
-        Vector3 currentOffset = CalculateOffset(normalizedTime);
+        Vector3 currentOffset = currentData.CalculateOffset(direction, normalizedTime);
         currentFrameDelta = currentOffset - previousOffset;
         previousOffset = currentOffset;
-
 
         if (deltaTime > 0f)
             currentFrameVerticalVelocity = currentFrameDelta.y / deltaTime;
@@ -104,32 +94,5 @@ public class CharacterDisplacement : MonoBehaviour
         }
 
         return currentFrameDelta;
-    }
-
-    private Vector3 CalculateOffset( float normalizedTime)
-    {
-        float progress = currentData.motionCurve.Evaluate(normalizedTime);
-
-        switch (currentData.displacementType)
-        {
-            case DisplacementType.Linear:
-                return direction * currentData.distance * progress;
-
-            case DisplacementType.Vertical:
-                return Vector3.up * currentData.verticalDistance * progress;
-
-            case DisplacementType.Parabolic:
-                Vector3 horizontalOffset = direction * currentData.distanceForParabola * progress;
-                float verticalProgress =  4f * normalizedTime * (1f - normalizedTime);
-                Vector3 verticalOffset = Vector3.up * currentData.height * verticalProgress;
-
-                return horizontalOffset + verticalOffset;
-            
-            case DisplacementType.Impulse:
-                return Vector3.zero;
-
-            default:
-                return Vector3.zero;
-        }
     }
 }

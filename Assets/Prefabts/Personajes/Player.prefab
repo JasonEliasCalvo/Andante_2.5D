@@ -533,9 +533,9 @@ MonoBehaviour:
   audioSource: {fileID: 2419410846301985866}
   movement: {fileID: 70271582842871367}
   locomotionSystem: {fileID: 5544314111958984542}
-  actionSimulationRunner: {fileID: 0}
+  actionSimulationRunner: {fileID: 2493857939613371282}
   reactionSystem: {fileID: 3959833022609236485}
-  visuals: {fileID: 0}
+  visuals: {fileID: 2779759456775129535}
   onDeathEnd:
     m_PersistentCalls:
       m_Calls: []
@@ -585,12 +585,12 @@ MonoBehaviour:
     desiredVelocity: {x: 0, y: 0, z: 0}
     rotationVelocity: 0
     isGrounded: 0
-  drawDebugGizmos: 1
   groundLayers:
     serializedVersion: 2
     m_Bits: 9
   groundCheckDistance: 0.6
   groundCheckRadiusMultiplier: 0.95
+  drawDebugGizmos: 1
 --- !u!114 &6338095071397713401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -640,10 +640,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84aaaf4d5c7020d4b921ff42446e0338, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocomotionSystem
-  verticalThreshold: 0.15
+  fighterEntity: {fileID: 1271651597105332095}
   coyoteDuration: 0.15
-  fallAnimState: Fall
-  fallLandAnimState: Fall_Land
+  verticalThreshold: 0.15
   locomotionBlendParam: LocomotionBlend
   blendDampTime: 0.1
 --- !u!114 &2493857939613371282
@@ -658,8 +657,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f50f28d7d03f33e4aa2d4ea98c5c08f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionFrameClock
-  targetFPS: 60
-  maxTicksPerFrame: 5
 --- !u!114 &3352529446377826173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -674,7 +671,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterFeedback
   movement: {fileID: 70271582842871367}
   locomotion: {fileID: 5544314111958984542}
-  actionSimulationRunner: {fileID: 0}
+  actionSimulationRunner: {fileID: 2493857939613371282}
   characterSource: {fileID: 2419410846301985866}
   landSound: {fileID: 8300000, guid: f3d0fe8c9e13d5e4394f0aa033ab5d8e, type: 3}
   footstepClips:

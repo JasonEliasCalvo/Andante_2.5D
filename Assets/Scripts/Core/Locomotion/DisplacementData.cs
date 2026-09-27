@@ -1,12 +1,6 @@
 using UnityEngine;
 
-public enum DisplacementType
-{
-    Linear,
-    Vertical,
-    Parabolic,
-    Impulse
-}
+public enum DisplacementType{ Linear, Vertical, Parabolic, Impulse}
 
 [CreateAssetMenu( fileName = "New Displacement", menuName = "Action/Movement/Displacement Data")]
 public class DisplacementData : ScriptableObject
@@ -35,4 +29,25 @@ public class DisplacementData : ScriptableObject
     [Header("Behaviour")]
     public bool blockHorizontalMovement = true;
     public bool applyGravityDuringDisplacement = false;
+
+    public Vector3 CalculateOffset(Vector3 direction, float normalizedTime)
+    {
+        float progress = motionCurve.Evaluate(normalizedTime);
+        switch (displacementType)
+        {
+            case DisplacementType.Linear:
+                return direction * distance * progress;
+            case DisplacementType.Vertical:
+                return Vector3.up * verticalDistance * progress;
+            case DisplacementType.Parabolic:
+                Vector3 horizontalOffset = direction * distanceForParabola * progress;
+                float verticalProgress = 4f * normalizedTime * (1f - normalizedTime);
+                Vector3 verticalOffset = Vector3.up * height * verticalProgress;
+                return horizontalOffset + verticalOffset;
+            case DisplacementType.Impulse:
+                return Vector3.zero;
+            default:
+                return Vector3.zero;
+        }
+    }
 }

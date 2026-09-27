@@ -22,49 +22,44 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private CharacterInputSource inputSource;
     [SerializeField] private CharacterDisplacement displacement;
 
-    [Header("Runtime")]
+    [Header("Runtime (debug)")]
     [SerializeField] private MovementRuntimeData runtimeData;
 
-    [Header("Debug")]
-    [SerializeField] private bool drawDebugGizmos = true;
-
-    [Header("Ground Check Avanzado")]
+    [Header("Ground Check")]
     [SerializeField] private LayerMask groundLayers = ~0;
     [SerializeField] private float groundCheckDistance = 0.15f;
     [SerializeField] private float groundCheckRadiusMultiplier = 0.95f;
 
-    private MovementLockSource movementLocks = MovementLockSource.None;
+    [Header("Debug")]
+    [SerializeField] private bool drawDebugGizmos = true;
 
+    // STATE
+    private MovementLockSource movementLocks = MovementLockSource.None;
+    private MovementCalculator calculator;
+
+    // PUBLIC API
     public LocomotionData LocomotionData => locomotionData;
     public CharacterController Controller => controller;
     public MovementRuntimeData RuntimeData => runtimeData;
-
     public float EffectiveVerticalVelocity
     {
         get
         {
             if (displacement != null && displacement.IsDisplacing)
                 return displacement.CurrentFrameVerticalVelocity;
-
-            else
-                return runtimeData.gravitytVerticalVelocity;
+            return runtimeData.gravitytVerticalVelocity;
         }
     }
 
     public bool IsGrounded =>
         (controller != null && controller.isGrounded) || ProbeGrounded();
 
-    public bool IsHorizontalMovementLocked =>
-        movementLocks != MovementLockSource.None;
-
-    public bool IsHorizontalMovementEnabled =>
-        movementLocks == MovementLockSource.None;
-
+    public bool IsHorizontalMovementLocked => movementLocks != MovementLockSource.None;
+    public bool IsHorizontalMovementEnabled => movementLocks == MovementLockSource.None;
     public CharacterDisplacement Displacement => displacement;
+    public bool IsDisplacing => displacement != null && displacement.IsDisplacing;
 
-    public bool IsDisplacing =>
-        displacement != null && displacement.IsDisplacing;
-
+    // LIFECYCLE
     private void Reset()
     {
         controller = GetComponent<CharacterController>();
@@ -73,15 +68,13 @@ public class CharacterMovement : MonoBehaviour
 
     private void Awake()
     {
-        if (controller == null)
-            controller = GetComponent<CharacterController>();
-
-        if (displacement == null)
-            displacement = GetComponent<CharacterDisplacement>();
+        if (controller == null) controller = GetComponent<CharacterController>();
+        if (displacement == null) displacement = GetComponent<CharacterDisplacement>();
 
         ValidateSetup();
 
         runtimeData = new MovementRuntimeData();
+        calculator = new MovementCalculator(locomotionData);
     }
 
     private void Update()
@@ -89,125 +82,61 @@ public class CharacterMovement : MonoBehaviour
         SimulateMovement(Time.deltaTime);
     }
 
+    // SIMULATION 
     private void SimulateMovement(float deltaTime)
     {
-        if (controller == null || locomotionData == null)
+        if (controller == null || calculator == null)
             return;
 
         runtimeData.isGrounded = controller.isGrounded;
 
-        Vector3 displacementDelta = displacement != null ?
-            displacement.SimulateDisplacement(deltaTime) : Vector3.zero;
+        Vector3 displacementDelta = displacement != null
+            ? displacement.SimulateDisplacement(deltaTime)
+            : Vector3.zero;
 
-        Vector3 inputDirection = GetInputDirection();
+        Vector3 rawInput = inputSource != null ? inputSource.GetMovementDirection() : Vector3.zero;
+        bool blocksByDisplacement = displacement != null && displacement.BlocksHorizontalMovement;
 
-        if (displacement != null && displacement.BlocksHorizontalMovement)
-            inputDirection = Vector3.zero;
+        Vector3 inputDirection = calculator.FilterInput(
+            rawInput,
+            IsHorizontalMovementLocked,
+            blocksByDisplacement);
 
+        runtimeData.desiredVelocity = calculator.ComputeDesiredVelocity(inputDirection);
+
+        // HORIZONTAL
+        Vector3 newHorizontalVelocity = calculator.ComputeHorizontalVelocity(
+            runtimeData.velocity,
+            runtimeData.desiredVelocity,
+            runtimeData.isGrounded,
+            deltaTime);
+
+        // VERTICAL
         bool useGravity = displacement == null || displacement.UsesGravity;
+        bool hitCeiling = (controller.collisionFlags & CollisionFlags.Above) != 0;
 
-        CalculateDesiredVelocity(inputDirection);
-        CalculateHorizontalVelocity(deltaTime);
-        CalculateVerticalVelocity(deltaTime, useGravity);
+        float displacementVertVel = displacement != null
+            ? displacement.CurrentFrameVerticalVelocity
+            : 0f;
 
-        ApplyMovement(deltaTime, displacementDelta);
-    }
+        float newVerticalVelocity = calculator.ComputeVerticalVelocity(
+            runtimeData.gravitytVerticalVelocity,
+            useGravity,
+            runtimeData.isGrounded,
+            hitCeiling,
+            displacementVertVel,
+            deltaTime,
+            out float effectiveVertical);
 
-    private Vector3 GetInputDirection()
-    {
-        if (!IsHorizontalMovementEnabled)
-            return Vector3.zero;
-
-        if (inputSource == null)
-            return Vector3.zero;
-
-        Vector3 direction = inputSource.GetMovementDirection();
-
-        if (direction.sqrMagnitude < 0.0001f)
-            return Vector3.zero;
-
-        direction.y = 0f;
-
-        return direction.normalized;
-    }
-
-    private void CalculateDesiredVelocity(Vector3 direction)
-    {
-        runtimeData.desiredVelocity = direction * locomotionData.walkSpeed;
-    }
-
-    private void CalculateHorizontalVelocity(float deltaTime)
-    {
-        Vector3 currentHorizontalVelocity = runtimeData.velocity;
-        currentHorizontalVelocity.y = 0f;
-
-        Vector3 targetVelocity = runtimeData.desiredVelocity;
-
-        float rate;
-
-        if (targetVelocity.sqrMagnitude > 0.001f)
-        {
-            rate = runtimeData.isGrounded
-                ? locomotionData.acceleration
-                : locomotionData.airAcceleration;
-        }
-        else
-        {
-            rate = runtimeData.isGrounded
-                ? locomotionData.deceleration
-                : locomotionData.airDeceleration;
-        }
-
-        Vector3 newHorizontalVelocity = Vector3.MoveTowards(
-            currentHorizontalVelocity,
-            targetVelocity,
-            rate * deltaTime
-        );
-
+        runtimeData.gravitytVerticalVelocity = newVerticalVelocity;
+        runtimeData.efectiveVerticalVelocity = effectiveVertical;
         runtimeData.velocity = new Vector3(
             newHorizontalVelocity.x,
-            runtimeData.velocity.y,
-            newHorizontalVelocity.z
-        );
-    }
+            newVerticalVelocity,
+            newHorizontalVelocity.z);
 
-    private void CalculateVerticalVelocity(float deltaTime, bool useGravity)
-    {
-        runtimeData.efectiveVerticalVelocity = EffectiveVerticalVelocity;
-
-        if (!useGravity)
-        {
-            runtimeData.gravitytVerticalVelocity = runtimeData.efectiveVerticalVelocity;
-            return;
-        }
-
-        if ((controller.collisionFlags & CollisionFlags.Above) != 0 && runtimeData.gravitytVerticalVelocity > 0f)
-        {
-            runtimeData.gravitytVerticalVelocity = 0f;
-        }
-
-        if (controller.isGrounded && runtimeData.gravitytVerticalVelocity < locomotionData.groundedVerticalVelocity)
-        {
-            runtimeData.gravitytVerticalVelocity = locomotionData.groundedVerticalVelocity;
-        }
-        else if (!controller.isGrounded)
-        {
-            float gravityMultiplier =
-                runtimeData.gravitytVerticalVelocity > 0f
-                    ? locomotionData.riseGravityMultiplier
-                    : locomotionData.fallGravityMultiplier;
-
-            float currentGravity = locomotionData.gravity * gravityMultiplier;
-
-            runtimeData.gravitytVerticalVelocity += currentGravity * deltaTime;
-
-            runtimeData.gravitytVerticalVelocity = Mathf.Max(
-                runtimeData.gravitytVerticalVelocity,
-                -locomotionData.terminalVelocity
-            );
-        }
-
-        runtimeData.efectiveVerticalVelocity = runtimeData.gravitytVerticalVelocity;
+        // 6. APPLY + ROTATE (Unity)
+        ApplyMovement(deltaTime, displacementDelta);
     }
 
     private void ApplyMovement(float deltaTime, Vector3 displacementDelta)
@@ -235,23 +164,15 @@ public class CharacterMovement : MonoBehaviour
         if (horizontalVelocity.sqrMagnitude < 0.0001f)
             return;
 
-        float targetAngle =
-            Mathf.Atan2(
-                horizontalVelocity.x,
-                horizontalVelocity.z
-            ) * Mathf.Rad2Deg;
+        float newAngle = calculator.ComputeRotation(
+               transform.eulerAngles.y,
+               horizontalVelocity,
+               ref runtimeData.rotationVelocity);
 
-        float angle = Mathf.SmoothDampAngle(
-            transform.eulerAngles.y,
-            targetAngle,
-            ref runtimeData.rotationVelocity,
-            locomotionData.rotationSmoothTime
-        );
-
-        transform.rotation =
-            Quaternion.Euler(0f, angle, 0f);
+        transform.rotation = Quaternion.Euler(0f, newAngle, 0f);
     }
 
+    // GROUND PROBE
     private bool ProbeGrounded()
     {
         if (controller == null) return false;
@@ -260,10 +181,12 @@ public class CharacterMovement : MonoBehaviour
         Vector3 origin = transform.position + controller.center + Vector3.up * Mathf.Max(0f, controller.height * 0.5f - radius);
         float castDistance = groundCheckDistance + 0.05f;
 
-        return Physics.SphereCast(origin, radius, Vector3.down, out _, castDistance, groundLayers, QueryTriggerInteraction.Ignore);
+        return Physics.SphereCast(
+            origin, radius, Vector3.down, out _,
+            castDistance, groundLayers, QueryTriggerInteraction.Ignore);
     }
 
-    // --- MOVEMENT CONTROL ---
+    // PUBLIC CONTROL API
     public void SetMovementLock(MovementLockSource source, bool locked)
     {
         if (locked)
@@ -272,17 +195,11 @@ public class CharacterMovement : MonoBehaviour
             movementLocks &= ~source;
 
         if (IsHorizontalMovementLocked)
-        {
             StopHorizontalMovement();
-        }
     }
 
     public void SetHorizontalMovementEnabled(bool enabled)
-    {
-        SetMovementLock(MovementLockSource.External,
-            !enabled
-        );
-    }
+        => SetMovementLock(MovementLockSource.External, !enabled);
 
     public void StopHorizontalMovement()
     {
@@ -291,73 +208,34 @@ public class CharacterMovement : MonoBehaviour
             runtimeData.velocity.y,
             0f
         );
-
-        runtimeData.desiredVelocity =
-            Vector3.zero;
+        runtimeData.desiredVelocity = Vector3.zero;
     }
+
 
     public bool StartDisplacement(DisplacementData data, Vector3 direction)
     {
-        if (Displacement == null)
-            return false;
-
-        return Displacement.StartDisplacement(
-            data,
-            direction
-        );
+        if (Displacement == null) return false;
+        return Displacement.StartDisplacement(data, direction);
     }
 
-    public void StopDisplacement()
-    {
-        Displacement?.StopDisplacement();
-    }
+    public void StopDisplacement() => Displacement?.StopDisplacement();
 
-    // --- EXTERNAL SETTERS ---
-    public void SetInputSource(CharacterInputSource source)
-    {
-        inputSource = source;
-    }
-
-    public void SetLocomotionData(LocomotionData data)
-    {
-        locomotionData = data;
-    }
-
+    public void SetInputSource(CharacterInputSource source) => inputSource = source;
+    public void SetLocomotionData(LocomotionData data) => locomotionData = data;
     public void SetVerticalVelocity(float velocity)
-    {
-        runtimeData.gravitytVerticalVelocity = velocity;
-    }
-
+        => runtimeData.gravitytVerticalVelocity = velocity;
     public void AddVerticalVelocity(float amount)
-    {
-        runtimeData.gravitytVerticalVelocity += amount;
-    }
+        => runtimeData.gravitytVerticalVelocity += amount;
 
+    // VALIDATION + GIZMOS
     private void ValidateSetup()
     {
         if (controller == null)
-        {
-            Debug.LogError(
-                $"{name}: CharacterMovement necesita un CharacterController.",
-                this
-            );
-        }
-
+            Debug.LogError($"{name}: CharacterMovement necesita un CharacterController.", this);
         if (locomotionData == null)
-        {
-            Debug.LogWarning(
-                $"{name}: No hay LocomotionData asignado.",
-                this
-            );
-        }
-
+            Debug.LogWarning($"{name}: No hay LocomotionData asignado.", this);
         if (inputSource == null)
-        {
-            Debug.LogWarning(
-                $"{name}: No hay CharacterInputSource asignado.",
-                this
-            );
-        }
+            Debug.LogWarning($"{name}: No hay CharacterInputSource asignado.", this);
     }
 
 #if UNITY_EDITOR
@@ -368,27 +246,13 @@ public class CharacterMovement : MonoBehaviour
 
         Vector3 origin = transform.position;
 
-        // Input / desired direction
         Gizmos.color = Color.green;
-
         if (runtimeData.desiredVelocity.sqrMagnitude > 0.01f)
-        {
-            Gizmos.DrawLine(
-                origin,
-                origin + runtimeData.desiredVelocity
-            );
-        }
+            Gizmos.DrawLine(origin, origin + runtimeData.desiredVelocity);
 
-        // Current velocity
         Gizmos.color = Color.blue;
-
         if (runtimeData.velocity.sqrMagnitude > 0.01f)
-        {
-            Gizmos.DrawLine(
-                origin,
-                origin + runtimeData.velocity
-            );
-        }
+            Gizmos.DrawLine(origin, origin + runtimeData.velocity);
     }
 
     private void OnDrawGizmos()
@@ -398,34 +262,15 @@ public class CharacterMovement : MonoBehaviour
         if (controller == null)
             return;
 
-        // Ground check
         Gizmos.color = Color.yellow;
         float radius = controller.radius * groundCheckRadiusMultiplier;
-        Vector3 sphereOrigin = transform.position + controller.center + Vector3.down * Mathf.Max(0f, controller.height * 0.5f - radius);
+
+        Vector3 sphereOrigin = transform.position + controller.center
+                   + Vector3.down * Mathf.Max(0f, controller.height * 0.5f - radius);
+        
         Gizmos.DrawWireSphere(sphereOrigin, radius);
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(
-            sphereOrigin,
-            sphereOrigin + Vector3.down * groundCheckDistance
-        );
+        Gizmos.DrawLine(sphereOrigin, sphereOrigin + Vector3.down * groundCheckDistance);
     }
 #endif
-}
-
-[System.Serializable]
-public struct MovementRuntimeData
-{
-    [Header("Velocity")]
-    public Vector3 velocity;
-    public float gravitytVerticalVelocity;
-    public float efectiveVerticalVelocity;
-
-    [Header("Desired Movement")]
-    public Vector3 desiredVelocity;
-
-    [Header("Rotation")]
-    public float rotationVelocity;
-
-    [Header("State")]
-    public bool isGrounded;
 }
