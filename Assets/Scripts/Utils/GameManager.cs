@@ -27,24 +27,15 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         if (instance == null)
-        {
             instance = this;
-        }
         else
-        {
             Destroy(gameObject);
-            return;
-        }
 
         if (DefaultCam != null)
-        {
             AxisController = DefaultCam.GetComponent<CinemachineInputAxisController>();
-        }
-
-        GamePrepate();
     }
 
-    public void GamePrepate()
+    public void GamePrepare()
     {
         if (fadeImage != null)
         {
@@ -57,10 +48,8 @@ public class GameManager : MonoBehaviour
         }
 
         StartFadeIn();
-
         timer = FindFirstObjectByType<Timer>();
-
-        Invoke(nameof(GameStart), 0.2f);
+        StartFadeIn(GameStart);
     }
 
     public void GameStart()

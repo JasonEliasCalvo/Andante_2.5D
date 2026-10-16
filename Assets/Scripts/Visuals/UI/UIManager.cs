@@ -37,7 +37,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (InvetoryPanel != null)
+        if (InvetoryPanel != null && SceneStartup.startupFinished)
             ShowInventoryPanel();
     }
 
