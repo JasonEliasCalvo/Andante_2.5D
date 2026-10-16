@@ -1,15 +1,13 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public enum InteractionType
 {
-    GenerateCards,
+    CustomInteraction,
     StartDialogue,
     StartMoving,
-    StopMoving,
-    StartTypingGame,
-    StartSyllableGame,
-    StartHappyAndAngryGame,
+    StopMoving, 
 }
 
 public class InteractableOptions : MonoBehaviour
@@ -30,6 +28,9 @@ public class InteractableOptions : MonoBehaviour
 
     private float cooldownTimer = 0.2f;
     private float cooldownCounter = 0f;
+
+    [Header("Custom Interaction")]
+    [SerializeField] private UnityEvent onCustomInteraction;
 
     void Start()
     {
@@ -79,8 +80,8 @@ public class InteractableOptions : MonoBehaviour
 
         switch (InteractionType)
         {
-            case InteractionType.GenerateCards:
-                GameManager.instance.MemoryGameStart();
+            case InteractionType.CustomInteraction:
+                onCustomInteraction?.Invoke();
                 break;
 
             case InteractionType.StartDialogue:
@@ -94,23 +95,20 @@ public class InteractableOptions : MonoBehaviour
             case InteractionType.StopMoving:
                 movableObject?.StopMoving();
                 break;
-
-            case InteractionType.StartTypingGame:
-                GameManager.instance.TypingGameStart();
-                break;
-
-            case InteractionType.StartSyllableGame:
-                GameManager.instance.SyllableGameStart();
-                break;
-
-            case InteractionType.StartHappyAndAngryGame:
-                GameManager.instance.HappyGameStart();
-                break;
         }
     }
 
-    public void PlayerInTrigger() => isPlayerInTrigger = true;
-    public void PlayerOutTrigger() => isPlayerInTrigger = false;
+    public void PlayerInTrigger(){
+        isPlayerInTrigger = true;
+
+        if (possibleInteract)
+            ShowInteractionPanel(true);
+    }
+
+    public void PlayerOutTrigger() {
+        isPlayerInTrigger = false;
+        ShowInteractionPanel(false);
+    }
     public void StartInterract() => possibleInteract = true;
     public void StopInterract() => possibleInteract = false;
     public void ShowInteractionPanel(bool state) => UIManager.instance.ShowInteractablePanel(state);

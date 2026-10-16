@@ -242,7 +242,8 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2991923384891272949, guid: f99e98caa9fb25248b85a18269e7ee55, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -323,7 +324,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: cf1cab8a243a8134ab499aeec5e71151, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: d66fb5472fc1d774c83fbcaf1015d1d2, type: 2}
+      objectReference: {fileID: 2100000, guid: a9fe6fc850991cf4a86f4b59b33ddea7, type: 2}
     - target: {fileID: 919132149155446097, guid: cf1cab8a243a8134ab499aeec5e71151, type: 3}
       propertyPath: m_Name
       value: Pared para puerta invertida

@@ -122,8 +122,6 @@ public class InventoryManager : MonoBehaviour
 
     public void ToggleDescription()
     {
-        if(UIManager.instance.dialoguePanel.activeSelf) return;
-
         descriptionText.text = string.Empty;
 
         if (slots[selectedSlotIndex].currentItem != null)

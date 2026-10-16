@@ -58,11 +58,6 @@ public class Ship : MovableObject
         List<int> currentPath = routes[currentRoute].pointIndices;
         Transform target = movePoints[currentPath[routeStep]];
 
-        if (!UIManager.instance.skipPanel.activeSelf && !isSkipping)
-        {
-            UIManager.instance.ShowSkipPanel(true);
-        }
-
         Vector3 direction = target.position - transform.position;
         direction.y = 0f;
 
@@ -92,7 +87,6 @@ public class Ship : MovableObject
         canMove = false;
         hasPlayedBellSound = false;
         interactableOptions.possibleInteract = true;
-        UIManager.instance.ShowSkipPanel(false);
         GameManager.instance.GameStart();
         currentRoute = (currentRoute + 1) % routes.Count;
         routeStep = 0;
@@ -101,7 +95,6 @@ public class Ship : MovableObject
     private IEnumerator SkipRoute()
     {
         isSkipping = true;
-        UIManager.instance.ShowSkipPanel(false);
 
         GameManager.instance.StartFadeOut(() =>
         {

@@ -24,8 +24,8 @@ public class ActionSimulationRunner : MonoBehaviour
     private void Start()
     {
         // Al nacer, nos suscribimos al Reloj Global
-        if (CombatTickManager.Instance != null)
-            CombatTickManager.Instance.RegisterRunner(this);
+        if (TickManager.Instance != null)
+            TickManager.Instance.RegisterRunner(this);
         else
             Debug.LogWarning($"[{gameObject.name}] No hay CombatTickManager en la escena.");
     }
@@ -33,8 +33,8 @@ public class ActionSimulationRunner : MonoBehaviour
     private void OnDestroy()
     {
         // Al morir, nos damos de baja
-        if (CombatTickManager.Instance != null)
-            CombatTickManager.Instance.UnregisterRunner(this);
+        if (TickManager.Instance != null)
+            TickManager.Instance.UnregisterRunner(this);
 
         if (simulation != null)
         {
